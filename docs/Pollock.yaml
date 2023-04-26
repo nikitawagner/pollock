@@ -1,0 +1,1030 @@
+openapi: 3.0.3
+info:
+  title: Pollock
+  description: >-
+    _Pollock_ is a specification for a [REST API](https://www.redhat.com/en/topics/api/what-is-a-rest-api) based on the [OpenAPI Specification 3 (OAS3)](https://spec.openapis.org/oas/v3.0.3).
+
+
+    _Pollock_ can be used to create polls, participate in them and modify them. Normally, the polls can be locked, so that only registered users can participate.
+
+
+    The name is composed of **poll** and **lock** and is the name of a fish, the [pollock](https://en.wikipedia.org/wiki/Pollock). A special thing about this fish is that it is also called **pollack**. If _Pollock_ was implemented without registration, then it would therefore be called _Pollack_, because registration is lacking.
+  version: 1.0.0
+servers:
+  - url: "http"
+tags:
+  - name: poll
+    description: Everything about a poll
+  - name: vote
+    description: Everything about a vote
+  - name: user
+    description: Operations about user
+  - name: lack
+    description: Everything for Pollack
+paths:
+  /poll/lack:
+    post:
+      tags:
+        - poll
+        - lack
+      summary: Add a new poll.
+      description: Add a new poll.
+      operationId: addPollack
+      requestBody:
+        $ref: "#/components/requestBodies/PollackBody"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PollResult"
+        "405":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ResponseMessage"
+                  - properties:
+                      code:
+                        example: 405
+                      message:
+                        example: Invalid input
+        default:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+  /poll/lack/{token}:
+    get:
+      tags:
+        - poll
+        - lack
+      summary: Find statistics of a poll by token.
+      description: Return the statistics of the poll by share token.
+      operationId: findPollack
+      parameters:
+        - name: token
+          in: path
+          description: The share token of poll
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Statistics"
+            text/html:
+              example: <!-- A page with the poll, e.g. a chart, table, etc. -->
+        "404":
+          description: Poll not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+        "410":
+          description: Gone
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ResponseMessage"
+                  - properties:
+                      code:
+                        example: 410
+                      message:
+                        example: Poll is gone.
+        default:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+    put:
+      tags:
+        - poll
+        - lack
+      summary: Update a poll
+      description: Update a poll by admin token.
+      operationId: updatePollack
+      parameters:
+        - name: token
+          in: path
+          description: Admin token to perform the update with
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/PollackBody"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ResponseMessage"
+                  - properties:
+                      code:
+                        example: 200
+                      message:
+                        example: i. O.
+        default:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+    delete:
+      tags:
+        - poll
+        - lack
+      summary: Deletes a poll
+      description: Deletes a poll by admin token.
+      operationId: deletePollack
+      parameters:
+        - name: token
+          in: path
+          description: Admin token to delete the poll
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ResponseMessage"
+                  - properties:
+                      code:
+                        example: 200
+                      message:
+                        example: i. O.
+        "400":
+          description: Invalid poll admin token.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ResponseMessage"
+                  - properties:
+                      code:
+                        example: 400
+                      message:
+                        example: Invalid poll admin token.
+        default:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+  /poll/lock:
+    post:
+      tags:
+        - poll
+      summary: Add a new poll.
+      description: Add a new poll
+      operationId: addPollock
+      requestBody:
+        $ref: "#/components/requestBodies/PollockBody"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PollResult"
+        "405":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ResponseMessage"
+                  - properties:
+                      code:
+                        example: 405
+                      message:
+                        example: Invalid input
+        default:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+      security:
+        - api_key: []
+  /poll/lock/{token}:
+    get:
+      tags:
+        - poll
+      summary: Find statistics of a poll by token.
+      description: Return the statistics of the poll by share token.
+      operationId: findPollock
+      parameters:
+        - name: token
+          in: path
+          description: The share token of poll
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Statistics"
+            text/html:
+              example: <!-- A page with the poll, e.g. a chart, table, etc. -->
+        "404":
+          description: Poll not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+        default:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+      security:
+        - api_key: []
+    put:
+      tags:
+        - poll
+      summary: Update a poll
+      description: Update a poll by admin token.
+      operationId: updatePollock
+      parameters:
+        - name: token
+          in: path
+          description: admin token that need to be deleted
+          required: true
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/PollockBody"
+      responses:
+        default:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+      security:
+        - api_key: []
+    delete:
+      tags:
+        - poll
+      summary: Deletes a poll
+      description: Deletes a poll by admin token.
+      operationId: deletePollock
+      parameters:
+        - name: token
+          in: path
+          description: Admin token to delete the poll
+          required: true
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Invalid poll admin token.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ResponseMessage"
+                  - properties:
+                      code:
+                        example: 400
+                      message:
+                        example: Invalid poll admin token.
+        default:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+      security:
+        - api_key: []
+  /vote/lack/{token}:
+    post:
+      tags:
+        - vote
+        - lack
+      summary: Add a new vote to the poll
+      description: Add a new vote to the poll
+      operationId: addVotePollack
+      parameters:
+        - name: token
+          in: path
+          description: Share token to vote in the poll.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Create a new poll
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Vote"
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoteResult"
+        "404":
+          description: Poll not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+        "405":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ResponseMessage"
+                  - properties:
+                      code:
+                        example: 405
+                      message:
+                        example: Invalid input
+        "410":
+          description: Gone
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ResponseMessage"
+                  - properties:
+                      code:
+                        example: 410
+                      message:
+                        example: Poll is gone.
+        default:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+    get:
+      tags:
+        - vote
+        - lack
+      summary: Find the vote of the token
+      description: Find the vote of the token
+      operationId: findVotePollack
+      parameters:
+        - name: token
+          in: path
+          description: The edit token of poll
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoteInfo"
+            text/html:
+              example: <!-- A page with the poll, e.g. a chart, table, etc. -->
+        "404":
+          description: Poll not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+        "405":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ResponseMessage"
+                  - properties:
+                      code:
+                        example: 405
+                      message:
+                        example: Invalid input
+        "410":
+          description: Gone
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ResponseMessage"
+                  - properties:
+                      code:
+                        example: 410
+                      message:
+                        example: Poll is gone.
+        default:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+    put:
+      tags:
+        - vote
+        - lack
+      summary: Update a vote of the token
+      description: Update a vote of the token
+      operationId: updateVotePollack
+      parameters:
+        - name: token
+          in: path
+          description: Edit token to perform the update with
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent vote in the poll
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Vote"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ResponseMessage"
+                  - properties:
+                      code:
+                        example: 200
+                      message:
+                        example: i. O.
+        default:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+    delete:
+      tags:
+        - vote
+        - lack
+      summary: Delete a vote of the token
+      description: Delete a vote of the token
+      operationId: deleteVotePollack
+      parameters:
+        - name: token
+          in: path
+          description: Edit token to delete the poll
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ResponseMessage"
+                  - properties:
+                      code:
+                        example: 200
+                      message:
+                        example: i. O.
+        "400":
+          description: Invalid poll admin token.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ResponseMessage"
+                  - properties:
+                      code:
+                        example: 400
+                      message:
+                        example: Invalid poll admin token.
+        default:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+  /vote/lock/{token}:
+    post:
+      tags:
+        - vote
+      summary: Add a new vote to the poll
+      description: Add a new vote to the poll
+      operationId: addVotePollock
+      parameters:
+        - name: token
+          in: path
+          description: Share token to vote in the poll.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Create a new poll
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Vote"
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoteResult"
+        "405":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ResponseMessage"
+                  - properties:
+                      code:
+                        example: 405
+                      message:
+                        example: Invalid input
+        default:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+      security:
+        - api_key: []
+    get:
+      tags:
+        - vote
+      summary: Find the vote of the token
+      description: Find the vote of the token
+      operationId: findVotePollock
+      parameters:
+        - name: token
+          in: path
+          description: The edit token of poll
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VoteInfo"
+            text/html:
+              example: <!-- A page with the poll, e.g. a chart, table, etc. -->
+        "404":
+          description: Poll not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+        default:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+      security:
+        - api_key: []
+    put:
+      tags:
+        - vote
+      summary: Update a vote of the token
+      description: Update a vote of the token
+      operationId: updateVotePollock
+      parameters:
+        - name: token
+          in: path
+          description: edit token to perform the update with
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent vote in the poll
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Vote"
+      responses:
+        default:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+      security:
+        - api_key: []
+    delete:
+      tags:
+        - vote
+      summary: Delete a vote of the token
+      description: Delete a vote of the token
+      operationId: deleteVotePollock
+      parameters:
+        - name: token
+          in: path
+          description: Edit token to delete the poll
+          required: true
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Invalid poll admin token.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/ResponseMessage"
+                  - properties:
+                      code:
+                        example: 400
+                      message:
+                        example: Invalid poll admin token.
+        default:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+      security:
+        - api_key: []
+  /user:
+    post:
+      tags:
+        - user
+      summary: Create user
+      operationId: createUser
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Registration"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The Pollock-API-Key for the new user
+        default:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+  /user/key:
+    post:
+      tags:
+        - user
+      summary: Create a API-Key for an existent user.
+      operationId: createKey
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Registration"
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The Pollock-API-Key for the user
+        default:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+  /user/{username}:
+    get:
+      tags:
+        - user
+      summary: Get user by user name
+      description: ""
+      operationId: getUserByName
+      parameters:
+        - name: username
+          in: path
+          description: "The name that needs to be fetched. Use user1 for testing."
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Invalid username supplied
+        "404":
+          description: User not found
+        default:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+      security:
+        - api_key: []
+    delete:
+      tags:
+        - user
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+        - name: username
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        "400":
+          description: Invalid username supplied
+        "404":
+          description: User not found
+        default:
+          description: Response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResponseMessage"
+      security:
+        - api_key: []
+components:
+  schemas:
+    Poll:
+      properties:
+        body:
+          $ref: "#/components/schemas/PollBody"
+        security:
+          $ref: "#/components/schemas/PollSecurity"
+        share:
+          $ref: "#/components/schemas/Token"
+      required: [body, share]
+    PollBody:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The title (in most cases a question) of the poll.
+          example: What is your favorite color?
+        description:
+          type: string
+          description: >
+            A description of the poll, as the **title** should be kept short, further information can be stored here, 
+            e.g. what is hidden behind *options*.
+          example: By blue are also meant blue-like colors, like turkish.
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/PollOption"
+          minItems: 2
+          description: The options of the poll.
+        setting:
+          $ref: "#/components/schemas/PollSetting"
+        fixed:
+          type: array
+          items:
+            type: integer
+            format: int32
+          minItems: 1
+          uniqueItems: true
+          description: >
+            The owner, or if there is no owner, someone with the admin token, can set one or more options that will be 
+            set, i.e. the result. This also ends the poll.
+      required: [title, options]
+    PollOption:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The Id of the option.
+        text:
+          type: string
+          description: The text of the option.
+      required: [id, text]
+    PollSetting:
+      type: object
+      properties:
+        voices:
+          type: integer
+          format: int32
+          minimum: 1
+          description: >
+            The number of votes, in the case that is not set, then all options can be selected. If single choice is to 
+            be used, then it must be set to 1.
+        worst:
+          type: boolean
+          default: false
+          description: If it is true, then *worst* can also be used.
+        deadline:
+          type: string
+          format: date-time
+          example: 2023-05-29T19:21:39+02:00
+          description: Voting can be done up to this point if it has not yet been fixed.
+    PollSecurity:
+      type: object
+      properties:
+        owner:
+          $ref: "#/components/schemas/User"
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+          minItems: 1
+          description: >
+            The field is optional, if it is set, then the *owner* must also be specified.
+            Only the users and the owner can vote, so at least one other user is required.
+        visibility:
+          type: string
+          enum:
+            - lock
+            - lack
+          default: lack
+          description: >
+            Visibility:
+             * `lock` - The poll is only visibility for the users. 
+             * `lack` - The poll is visible to all.
+    PollResult:
+      type: object
+      description: The result after creating a poll.
+      properties:
+        admin:
+          $ref: "#/components/schemas/Token"
+        share:
+          $ref: "#/components/schemas/Token"
+      required: [admin, share]
+    Statistics:
+      type: object
+      properties:
+        poll:
+          $ref: "#/components/schemas/Poll"
+        participants:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+          description: The array of users.
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/StatisticsOption"
+          description: The length of the array corresponds to the number of options in the poll.
+      required: [poll, participants, options]
+    StatisticsOption:
+      type: object
+      properties:
+        voted:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: In the array are the index of the participants voted the option. The length is the number of the voice.
+        worst:
+          type: array
+          items:
+            type: integer
+            format: int32
+          description: Similar to *voted*, except it's an 'if you must." or "in the *worst* case".
+      required: [voted]
+    Vote:
+      type: object
+      properties:
+        owner:
+          $ref: "#/components/schemas/User"
+        choice:
+          type: array
+          items:
+            $ref: "#/components/schemas/VoteChoice"
+          minItems: 1
+      required: [owner, choice]
+    VoteChoice:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The id of the option of the poll.
+          example: 1
+        worst:
+          type: boolean
+          default: false
+          description: If the selection is to be the *worst*, then true.
+      required: [id]
+    VoteResult:
+      type: object
+      description: The result after creating a vote.
+      properties:
+        edit:
+          $ref: "#/components/schemas/Token"
+      required: [edit]
+    VoteInfo:
+      type: object
+      properties:
+        poll:
+          $ref: "#/components/schemas/Poll"
+        vote:
+          $ref: "#/components/schemas/Vote"
+        time:
+          type: string
+          format: date-time
+          example: 2023-05-29T19:21:39+02:00
+          description: The time at which the vote was taken.
+      required: [poll, vote, time]
+    Registration:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The username of the user.
+        password:
+          type: string
+          description: The password of the user.
+      required: [name, password]
+    User:
+      properties:
+        name:
+          type: string
+          description: The username of the user.
+        lock:
+          type: boolean
+          description: The user is a Pollock user.
+      required: [name]
+    Token:
+      type: object
+      properties:
+        link:
+          type: string
+          description: A link where the token can be used.
+        value:
+          type: string
+          description: The value should be unique and should not have been assigned yet.
+          example: 71yachha3ca48yz7
+      required: [value]
+      readOnly: true
+    ResponseMessage:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          description: The status codes are defined by [RFC 9110](https://www.rfc-editor.org/rfc/rfc9110.html#name-status-codes).
+          example: 404
+        message:
+          type: string
+          example: Poll not found.
+      required: [message]
+  requestBodies:
+    PollackBody:
+      description: Poll body object in Pollack
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PollBody"
+      required: true
+    PollockBody:
+      description: Poll body object in Pollock
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/PollBody"
+              - $ref: "#/components/schemas/PollSecurity"
+              - required: [owner]
+      required: true
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: API-KEY
+      in: header
