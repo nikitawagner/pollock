@@ -158,70 +158,39 @@ export const putPollLack = async (req, res, next) => {
 				},
 			});
 
-			await dbConnection.tokens.createMany({
-				data: [
-					{
-						value: v4(),
-						link: "string",
-						type: "admin",
-						poll_fk: pollId,
-					},
-					{
-						value: v4(),
-						link: "string",
-						type: "share",
-						poll_fk: pollId,
-					},
-				],
+			const oldOptions = await dbConnection.poll_options.findMany({
+				where: {
+					poll_id_fk: pollId,
+				},
 			});
 
 			await Promise.all(
-				options.map(async (option) => {
-					await dbConnection.poll_options.create({
+				oldOptions.map(async (option, index) => {
+					await dbConnection.poll_options.update({
 						data: {
-							text: option.text,
-							polls: { connect: { id: pollId } },
+							text: options[index].text,
+						},
+						where: {
+							id: option.id,
 						},
 					});
 				})
 			);
 
-			await dbConnection.poll_settings.create({
+			await dbConnection.poll_settings.updateMany({
 				data: {
 					voices: setting.voices,
 					worst: setting.worst,
 					deadline: setting.deadline,
-					polls: { connect: { id: pollId } },
 				},
-			});
-			const tokens = await dbConnection.tokens.findMany({
 				where: {
-					poll_fk: pollId,
-				},
-				orderBy: {
-					type: "asc",
+					polls_fk: pollId,
 				},
 			});
-			let adminToken;
-			let shareToken;
-			tokens.forEach((token) => {
-				if (token.type === "admin") {
-					adminToken = token;
-				} else if (token.type === "share") {
-					shareToken = token;
-				}
+			res.status(200).json({
+				code: 200,
+				message: "i. O.",
 			});
-			const resultBody = {
-				admin: {
-					link: adminToken.link,
-					value: adminToken.value,
-				},
-				share: {
-					link: shareToken.link,
-					value: shareToken.value,
-				},
-			};
-			res.status(200).json(123);
 		} else {
 			res.status(404).json({
 				code: 404,
