@@ -81,24 +81,55 @@ export const postPollLack = async (req, res, next) => {
 		res.status(200).json(resultBody);
 	} catch (error) {
 		console.log(error);
-		res.status(500).json(error);
+		res.status(405).json({ code: 405, message: "Invalid input" });
 	}
 };
 
 export const getPollLack = async (req, res, next) => {
-	const token = req.params.token;
-	const { poll_fk } = await dbConnection.tokens.findFirst({
-		where: {
-			value: token,
-		},
-		include: {
-			polls: true,
-		},
-	});
+	try {
+		const token = req.params.token;
+		const { poll_fk } = await dbConnection.tokens.findFirst({
+			where: {
+				value: token,
+			},
+		});
 
-	console.log(poll_fk);
-
-	res.status(200).json({ message: "get" });
+		if (poll_fk > 0) {
+			const pollBody = await dbConnection.polls.findFirst({
+				where: {
+					id: poll_fk,
+				},
+				include: {
+					poll_options: true,
+					poll_settings: {
+						select: {
+							voices: true,
+							worst: true,
+							deadline: true,
+						},
+					},
+				},
+			});
+			if (pollBody) {
+				// TODO: get participants and options
+				res.status(200).json({
+					poll: pollBody,
+					participants: ["Peter", "Hans"],
+					options: [
+						{ voted: 2, worst: [0] },
+						{ voted: 0, worst: [1] },
+					],
+				});
+			} else {
+				res.status(410).json({ code: 410, message: "Poll is gone." });
+			}
+		} else {
+			res.status(404).json({ code: 405, message: "Poll not found." });
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(404).json({ code: 405, message: "Poll not found." });
+	}
 };
 
 export const putPollLack = async (req, res, next) => {

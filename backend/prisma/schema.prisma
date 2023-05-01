@@ -31,7 +31,7 @@ model polls {
   id            Int             @id @default(autoincrement())
   title         String          @db.VarChar(255)
   description   String?         @default("no description") @db.VarChar(255)
-  fixed         Int?            @default(0) @db.TinyInt
+  fixed         String          @default("[0]") @db.VarChar(255)
   poll_options  poll_options[]
   poll_settings poll_settings[]
   tokens        tokens[]
