@@ -88,13 +88,14 @@ export const postPollLack = async (req, res, next) => {
 export const getPollLack = async (req, res, next) => {
 	try {
 		const token = req.params.token;
-		const { poll_fk } = await dbConnection.tokens.findFirst({
+		const tokenResponse = await dbConnection.tokens.findFirst({
 			where: {
 				value: token,
 			},
 		});
 
-		if (poll_fk > 0) {
+		if (tokenResponse) {
+			const poll_fk = tokenResponse.poll_fk;
 			const pollBody = await dbConnection.polls.findFirst({
 				where: {
 					id: poll_fk,
@@ -207,5 +208,37 @@ export const putPollLack = async (req, res, next) => {
 };
 
 export const deletePollLack = async (req, res, next) => {
-	res.status(200).json({ message: "delete" });
+	try {
+		const tokenResponse = await dbConnection.tokens.findFirst({
+			where: {
+				AND: {
+					value: req.params.token,
+					type: "admin",
+				},
+			},
+		});
+		if (tokenResponse) {
+			const deleteResponse = await dbConnection.polls.delete({
+				where: {
+					id: tokenResponse.poll_fk,
+				},
+			});
+			res.status(200).json({
+				code: 200,
+				message: "i. O.",
+				data: deleteResponse,
+			});
+		} else {
+			res.status(400).json({
+				code: 400,
+				message: "Invalid poll admin token.",
+			});
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(404).json({
+			code: 404,
+			message: "Poll not found.",
+		});
+	}
 };
