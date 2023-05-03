@@ -125,11 +125,11 @@ export const getPollLack = async (req, res, next) => {
 				res.status(410).json({ code: 410, message: "Poll is gone." });
 			}
 		} else {
-			res.status(404).json({ code: 405, message: "Poll not found." });
+			res.status(404).json({ code: 404, message: "Poll not found." });
 		}
 	} catch (error) {
 		console.log(error);
-		res.status(404).json({ code: 405, message: "Poll not found." });
+		res.status(404).json({ code: 404, message: "Poll not found." });
 	}
 };
 
