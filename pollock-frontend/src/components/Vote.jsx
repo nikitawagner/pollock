@@ -1,13 +1,27 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from "prop-types";
 
 const Vote = ({ pollId }) => {
-    const [selectedOption, setSelectedOption] = useState(null);
+    const [options, setOptions] = useState([]);
+    const [selectedOptions, setSelectedOptions] = useState([]);
+
+    useEffect(() => {
+        const fetchOptions = async () => {
+            try {
+                const response = await axios.get(`/api/polls/${pollId}/options`);
+                setOptions(response.data);
+            } catch (error) {
+                console.error('Error fetching poll options:', error);
+            }
+        };
+
+        fetchOptions();
+    }, [pollId]);
 
     const handleVote = async () => {
         try {
-            const response = await axios.post(`/api/polls/${pollId}/vote`, { optionId: selectedOption });
+            const response = await axios.post(`/api/polls/${pollId}/vote`, { options: selectedOptions });
             if (response.status === 200) {
                 alert('Vote submitted successfully');
             } else {
@@ -21,16 +35,26 @@ const Vote = ({ pollId }) => {
     return (
         <div>
             <h2>Vote</h2>
-            <select value={selectedOption} onChange={(e) => setSelectedOption(e.target.value)}>
-                <option value="">Select an option</option>
-                {/* Replace the options array with the fetched poll options */}
-                {['Option 1', 'Option 2', 'Option 3'].map((option, index) => (
-                    <option key={index} value={index}>
-                        {option}
-                    </option>
+            <form onSubmit={handleVote}>
+                {options.map((option, index) => (
+                    <div key={index}>
+                        <label>
+                            <input type="checkbox" checked={selectedOptions.includes(option.id)} onChange={(e) => {
+                                const checked = e.target.checked;
+                                setSelectedOptions((prevSelectedOptions) => {
+                                    if (checked) {
+                                        return [...prevSelectedOptions, option.id];
+                                    } else {
+                                        return prevSelectedOptions.filter((selectedOption) => selectedOption !== option.id);
+                                    }
+                                });
+                            }} />
+                            {option.text}
+                        </label>
+                    </div>
                 ))}
-            </select>
-            <button onClick={handleVote}>Submit Vote</button>
+                <button type="submit">Submit Vote</button>
+            </form>
         </div>
     );
 };
@@ -38,4 +62,5 @@ const Vote = ({ pollId }) => {
 Vote.propTypes = {
     pollId: PropTypes.string.isRequired,
 };
+
 export default Vote;

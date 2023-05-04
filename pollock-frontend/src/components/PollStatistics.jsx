@@ -38,5 +38,4 @@ PollStatistics.propTypes = {
     pollId: PropTypes.string.isRequired,
 };
 
-
 export default PollStatistics;
