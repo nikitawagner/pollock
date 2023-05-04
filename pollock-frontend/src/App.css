@@ -3,6 +3,10 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8f9fa;
 }
 
 .logo {
@@ -31,6 +35,21 @@
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
   }
+}
+
+.App-header {
+  padding: 1.5rem;
+  background-color: #343a40;
+  color: white;
+}
+
+main {
+  flex-grow: 1;
+  padding: 2rem;
+}
+
+button {
+  margin-top: 1rem;
 }
 
 .card {
