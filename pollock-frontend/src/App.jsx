@@ -1,10 +1,10 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import "./App.css";
-import CreatePoll from "./components/CreatePoll.jsx";
-import ViewPoll from "./components/ViewPoll.jsx";
-import UpdatePoll from "./components/UpdatePoll.jsx";
-import AppNavbar from "./components/Navbar.jsx";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import './App.css';
+import CreatePoll from './components/CreatePoll';
+import ViewPoll from './components/ViewPoll';
+import UpdatePoll from './components/UpdatePoll';
+import AppNavbar from './components/Navbar';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
 	return (
@@ -17,6 +17,7 @@ function App() {
 				<main>
 					<Routes>
 						<Route path="/" element={<CreatePoll />} />
+						<Route path="/create-poll" element={<CreatePoll />} />
 						<Route path="/view-poll/:token" element={<ViewPoll />} />
 						<Route path="/update-poll/:adminToken" element={<UpdatePoll />} />
 					</Routes>

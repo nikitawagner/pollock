@@ -1,5 +1,5 @@
-import { Navbar, Nav } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Navbar, Nav } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
 const AppNavbar = () => {
     return (
@@ -8,12 +8,13 @@ const AppNavbar = () => {
             variant="dark"
             expand="lg"
             sticky="top"
-            style={{ width: "100%", zIndex: 1000 }}
+            style={{ width: '100%', zIndex: 1000 }}
         >
             <Navbar.Brand as={Link} to="/">
                 Poll App
             </Navbar.Brand>
-            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+            <Navbar.Toggle
+                aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="ml-auto">
                     <Nav.Link as={Link} to="/">
