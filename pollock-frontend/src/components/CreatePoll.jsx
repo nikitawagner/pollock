@@ -23,14 +23,17 @@ const CreatePoll = () => {
         };
 
         try {
-            const response = await axios.post('/api/polls', pollData);
+            const response = await axios.post('http://localhost:49706/polls', pollData);
 
             if (response.status === 200) {
+                console.log("200 ok");
                 alert('Poll created successfully:', response.data);
             } else {
+                console.log("200 not OK")
                 alert('Unexpected response:', response);
             }
         } catch (error) {
+            console.log("Error"+error.message)
             alert('Error:', error.message);
         }
     };

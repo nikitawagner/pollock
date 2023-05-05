@@ -1,4 +1,5 @@
 // DeletePoll.js
+
 import { useState } from 'react';
 import axios from 'axios';
 
@@ -35,5 +36,4 @@ const DeletePoll = () => {
         </div>
     );
 };
-
 export default DeletePoll;

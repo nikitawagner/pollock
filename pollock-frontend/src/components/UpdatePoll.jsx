@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { useState, useEffect } from 'react';
-import { Form, Button, Container, InputGroup, FormControl } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
+import {useState, useEffect} from 'react';
+import {Form, Button, Container, InputGroup, FormControl} from 'react-bootstrap';
+import {useParams} from 'react-router-dom';
 
 const UpdatePoll = () => {
-    const { token } = useParams();
+    const {token} = useParams();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [options, setOptions] = useState(['']);
@@ -17,7 +17,7 @@ const UpdatePoll = () => {
         const fetchPollData = async () => {
             try {
                 const response = await axios.get(`http://localhost:49706/poll/lack/${token}`);
-                const { title, description, options, setting } = response.data;
+                const {title, description, options, setting} = response.data;
                 setTitle(title);
                 setDescription(description);
                 setOptions(options.map((option) => option.text));
@@ -38,8 +38,8 @@ const UpdatePoll = () => {
         const pollData = {
             title,
             description,
-            options: options.map((option) => ({ text: option })),
-            setting: { voices, worst, deadline },
+            options: options.map((option) => ({text: option})),
+            setting: {voices, worst, deadline},
             fixed,
         };
 
@@ -55,7 +55,7 @@ const UpdatePoll = () => {
             }
         } catch (error) {
             if (error.response) {
-                const { status } = error.response;
+                const {status} = error.response;
                 if (status === 400 || status === 405) {
                     console.log('Invalid input:', error.response.data);
                 } else if (status === 404) {
@@ -86,7 +86,7 @@ const UpdatePoll = () => {
             <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="title">
                     <Form.Label>Title:</Form.Label>
-                    <Form.Control type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
+                    <Form.Control type="text" value={title} onChange={(e) => setTitle(e.target.value)}/>
                 </Form.Group>
 
                 <Form.Group controlId="description">
@@ -121,7 +121,6 @@ const UpdatePoll = () => {
                         onChange={(e) => setVoices(parseInt(e.target.value, 10))}
                     />
                 </Form.Group>
-
                 <Form.Group controlId="worst">
                     <Form.Check
                         type="checkbox"

@@ -59,3 +59,7 @@ button {
 .read-the-docs {
   color: #888;
 }
+.container {
+  max-width: 800px;
+margin: 0 auto;
+}

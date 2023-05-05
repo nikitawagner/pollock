@@ -4,6 +4,12 @@
 	"description": "",
 	"main": "index.js",
 	"type": "module",
+	"esm": {
+		"extensions": [
+			".js",
+			".css"
+		]
+	},
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"dev": "nodemon index.js"
@@ -25,6 +31,7 @@
 		"uuid": "^9.0.0"
 	},
 	"devDependencies": {
+		"esm": "^3.2.25",
 		"prisma": "^4.13.0"
 	}
 }
