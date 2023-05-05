@@ -11,7 +11,7 @@ model poll_options {
   id         Int    @id @default(autoincrement())
   text       String @db.VarChar(255)
   poll_id_fk Int
-  polls      polls  @relation(fields: [poll_id_fk], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "poll_id_fk")
+  polls      polls  @relation(fields: [poll_id_fk], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "poll_id_fk")
 
   @@index([poll_id_fk], map: "poll_id_fk_idx")
 }
@@ -22,7 +22,7 @@ model poll_settings {
   worst    Int      @default(0) @db.TinyInt
   polls_fk Int
   deadline DateTime @db.DateTime(0)
-  polls    polls    @relation(fields: [polls_fk], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "polls_fk")
+  polls    polls    @relation(fields: [polls_fk], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "polls_fk")
 
   @@index([polls_fk], map: "polls_id_fk_idx")
 }
@@ -36,7 +36,6 @@ model polls {
   poll_settings poll_settings[]
   tokens        tokens[]
   user_poll     user_poll[]
-  vote_choice   vote_choice[]
 }
 
 model tokens {
@@ -45,7 +44,7 @@ model tokens {
   link    String?     @default("string") @db.VarChar(45)
   type    tokens_type
   poll_fk Int?
-  polls   polls?      @relation(fields: [poll_fk], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "poll_fk")
+  polls   polls?      @relation(fields: [poll_fk], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "poll_fk")
   votes   votes[]
 
   @@index([poll_fk], map: "poll_fk_idx")
@@ -54,8 +53,8 @@ model tokens {
 model user_poll {
   users_id_fk Int
   polls_id_fk Int
-  polls       polls @relation(fields: [polls_id_fk], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "polls_id_fk")
-  users       users @relation(fields: [users_id_fk], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "users_id_fk")
+  polls       polls @relation(fields: [polls_id_fk], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "polls_id_fk")
+  users       users @relation(fields: [users_id_fk], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "users_id_fk")
 
   @@id([users_id_fk, polls_id_fk])
   @@index([polls_id_fk], map: "poll_id_fk_idx")
@@ -71,21 +70,18 @@ model users {
 model vote_choice {
   vote_id_fk        Int
   poll_option_id_fk Int
-  polls             polls @relation(fields: [poll_option_id_fk], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "poll_option_id_fk")
-  votes             votes @relation(fields: [vote_id_fk], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "vote_id_fk")
+  worst             Int? @default(0) @db.TinyInt
 
   @@id([vote_id_fk, poll_option_id_fk])
-  @@index([poll_option_id_fk], map: "poll_option_id_fk_idx")
 }
 
 model votes {
-  id               Int           @id @default(autoincrement())
-  time             DateTime      @db.DateTime(0)
+  id               Int     @id @default(autoincrement())
+  time             String? @db.VarChar(45)
   user_id_fk       Int
   edit_token_id_fk Int
-  vote_choice      vote_choice[]
-  tokens           tokens        @relation(fields: [edit_token_id_fk], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "edit_token_id_fk")
-  users            users         @relation(fields: [user_id_fk], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_id_fk")
+  tokens           tokens  @relation(fields: [edit_token_id_fk], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "edit_token_id_fk")
+  users            users   @relation(fields: [user_id_fk], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_id_fk")
 
   @@index([edit_token_id_fk], map: "edit_token_id_fk_idx")
   @@index([user_id_fk], map: "user_id_fk_idx")
