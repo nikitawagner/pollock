@@ -23,7 +23,7 @@ const CreatePoll = () => {
         };
 
         try {
-            const response = await axios.post('http://localhost:49706/polls', pollData);
+            const response = await axios.post('http://localhost:49706/poll/lack', pollData);
 
             if (response.status === 200) {
                 console.log("200 ok");
