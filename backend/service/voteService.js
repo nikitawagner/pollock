@@ -71,7 +71,8 @@ export const postVoteLack = async (req, res, next) => {
 						});
 					})
 				);
-				res.status(200).json({ edit: { link: "string", value: token } });
+				console.log(tokenId);
+				res.status(200).json({ edit: { link: "string", value: tokenValue } });
 			} else {
 				res.status(404).json({
 					code: 404,
@@ -89,16 +90,162 @@ export const postVoteLack = async (req, res, next) => {
 };
 
 export const getVoteLack = async (req, res, next) => {
-	const token = req.params.token;
-	res.status(200).json({ message: "get" });
+	try {
+		try {
+			const token = req.params.token;
+			const tokenResponse = await dbConnection.tokens.findFirst({
+				where: {
+					value: token,
+				},
+			});
+
+			if (tokenResponse && tokenResponse.type === "edit") {
+				const pollId = tokenResponse.poll_fk;
+				const tokenId = tokenResponse.id;
+				const shareTokenFull = await dbConnection.tokens.findFirst({
+					where: {
+						AND: {
+							poll_fk: pollId,
+							type: "share",
+						},
+					},
+				});
+				const shareToken = shareTokenFull.value;
+				const pollResponse = await dbConnection.polls.findFirst({
+					where: {
+						id: pollId,
+					},
+					include: {
+						poll_options: {
+							select: {
+								id: true,
+								text: true,
+							},
+						},
+						poll_settings: {
+							select: {
+								voices: true,
+								worst: true,
+								deadline: true,
+							},
+						},
+					},
+				});
+				const pollBody = {
+					title: pollResponse.title,
+					description: pollResponse.description,
+					options: pollResponse.poll_options,
+					settings: pollResponse.poll_settings,
+					fixed: pollResponse.fixed,
+				};
+				const voteResponse = await dbConnection.votes.findFirst({
+					where: {
+						edit_token_id_fk: tokenId,
+					},
+					include: {
+						users: {
+							select: {
+								name: true,
+							},
+						},
+					},
+				});
+				const voteId = voteResponse.id;
+				const owner = voteResponse.users.name;
+				const choicesResponse = await dbConnection.vote_choice.findMany({
+					where: {
+						vote_id_fk: voteId,
+					},
+					select: {
+						poll_option_id_fk: true,
+						worst: true,
+					},
+				});
+				const choicesObject = [];
+				choicesResponse.map((choice) => {
+					choicesObject.push({
+						id: choice.poll_option_id_fk,
+						worst: choice.worst,
+					});
+				});
+				console.log(choicesObject);
+				// TODO choicesObjekt durchgehen aus poll option ... einfach id machen un din choice reinballern
+				res.status(200).json({
+					poll: {
+						body: pollBody,
+						share: { link: "string", value: shareToken },
+					},
+					vote: {
+						owner: {
+							name: owner,
+						},
+						choice: choicesObject,
+					},
+					time: voteResponse.time,
+				});
+			} else {
+				res.status(404).json({
+					code: 404,
+					message: "Poll not found.",
+				});
+			}
+		} catch (error) {
+			console.log(error);
+			res.status(405).json({
+				code: 405,
+				message: "Invalid input",
+			});
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(404).json({
+			code: 404,
+			message: "Poll not found.",
+		});
+	}
 };
 
 export const putVoteLack = async (req, res, next) => {
-	const token = req.params.token;
-	res.status(200).json({ message: "put" });
+	try {
+		try {
+			const token = req.params.token;
+			const tokenResponse = dbConnection.tokens.findFirst({
+				where: {
+					id: token,
+				},
+			});
+			console.log(tokenResponse);
+			res.status(200).json(tokenResponse);
+		} catch (error) {
+			res.status(405).json({
+				code: 405,
+				message: "Invalid input",
+			});
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(404).json({
+			code: 404,
+			message: "Poll not found.",
+		});
+	}
 };
 
 export const deleteVoteLack = async (req, res, next) => {
-	const token = req.params.token;
-	res.status(200).json({ message: req.params.token });
+	try {
+		try {
+			const token = req.params.token;
+		} catch (error) {
+			res.status(405).json({
+				code: 405,
+				message: "Invalid input",
+			});
+		}
+	} catch (error) {
+		console.log(error);
+		res.status(404).json({
+			code: 404,
+			message: "Poll not found.",
+		});
+	}
 };
