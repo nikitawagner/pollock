@@ -131,12 +131,19 @@ export const getVoteLack = async (req, res, next) => {
 						},
 					},
 				});
+
+				const setting = {
+					voices: pollResponse.poll_settings[0].voices,
+					worst: pollResponse.poll_settings[0].worst ? true : false,
+					deadline: pollResponse.poll_settings[0].deadline,
+				};
+
 				const pollBody = {
 					id: pollResponse.id,
 					title: pollResponse.title,
 					description: pollResponse.description,
 					options: pollResponse.poll_options,
-					settings: pollResponse.poll_settings,
+					settings: setting,
 					fixed: JSON.parse(pollResponse.fixed),
 				};
 				const voteResponse = await dbConnection.votes.findFirst({
@@ -166,7 +173,7 @@ export const getVoteLack = async (req, res, next) => {
 				choicesResponse.map((choice) => {
 					choicesObject.push({
 						id: choice.poll_option_id_fk,
-						worst: choice.worst,
+						worst: choice.worst ? true : false,
 					});
 				});
 				res.status(200).json({
