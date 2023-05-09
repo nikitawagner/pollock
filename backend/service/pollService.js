@@ -6,7 +6,7 @@ export const postPollLack = async (req, res, next) => {
 	const newPoll = {
 		title: title,
 		description: description,
-		fixed: fixed,
+		fixed: JSON.stringify(fixed),
 	};
 	try {
 		const createdPoll = await dbConnection.polls.create({
@@ -96,7 +96,7 @@ export const getPollLack = async (req, res, next) => {
 
 		if (tokenResponse) {
 			const poll_fk = tokenResponse.poll_fk;
-			const pollBody = await dbConnection.polls.findFirst({
+			const pollBodyResponse = await dbConnection.polls.findFirst({
 				where: {
 					id: poll_fk,
 				},
@@ -111,15 +111,86 @@ export const getPollLack = async (req, res, next) => {
 					},
 				},
 			});
+			const pollBody = {
+				...pollBodyResponse,
+				fixed: JSON.parse(pollBodyResponse.fixed),
+			};
+			const participants = await dbConnection.user_poll.findMany({
+				where: {
+					polls_id_fk: poll_fk,
+				},
+				select: {
+					users: {
+						select: { name: true, id: true },
+					},
+				},
+			});
+			const participantArray = [];
+			const participentIdArray = [];
+			participants.map((participant) => {
+				participantArray.push(participant.users.name);
+				participentIdArray.push(participant.users.id);
+			});
+			const pollOptions = await dbConnection.poll_options.findMany({
+				where: {
+					poll_id_fk: poll_fk,
+				},
+			});
+			const votesChoice = await dbConnection.vote_choice.findMany({
+				where: {
+					poll_option_id_fk: {
+						in: pollOptions.map((pollOption) => pollOption.id),
+					},
+				},
+			});
+
+			const votes = await dbConnection.votes.findMany({
+				where: {
+					user_id_fk: {
+						in: participentIdArray,
+					},
+				},
+			});
+			const statisticsArray = [];
+			pollOptions.forEach((option) => {
+				const voteIdArray = [];
+				votesChoice.forEach((voteChoice) => {
+					if (option.id === voteChoice.poll_option_id_fk) {
+						voteIdArray.push(voteChoice);
+					}
+				});
+				const userArray = [];
+				voteIdArray.forEach((voteChoice) => {
+					votes.forEach((vote) => {
+						if (vote.id === voteChoice.vote_id_fk) {
+							userArray.push({ ...voteChoice, user: vote.user_id_fk });
+						}
+					});
+				});
+				statisticsArray.push(userArray);
+			});
+			const finalArray = [];
+			statisticsArray.forEach((statistic) => {
+				let body = {
+					voted: [],
+					worst: [],
+				};
+				statistic.forEach((element) => {
+					let index = participentIdArray.indexOf(element.user);
+					if (element.worst === 0) {
+						body.voted.push(index);
+					} else {
+						body.worst.push(index);
+					}
+				});
+				finalArray.push(body);
+			});
+
 			if (pollBody) {
-				// TODO: get participants and options
 				res.status(200).json({
 					poll: pollBody,
-					participants: ["Peter", "Hans"],
-					options: [
-						{ voted: 2, worst: [0] },
-						{ voted: 0, worst: [1] },
-					],
+					participants: participantArray,
+					options: finalArray,
 				});
 			} else {
 				res.status(410).json({ code: 410, message: "Poll is gone." });
