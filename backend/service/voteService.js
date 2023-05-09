@@ -137,7 +137,7 @@ export const getVoteLack = async (req, res, next) => {
 					description: pollResponse.description,
 					options: pollResponse.poll_options,
 					settings: pollResponse.poll_settings,
-					fixed: pollResponse.fixed,
+					fixed: JSON.parse(pollResponse.fixed),
 				};
 				const voteResponse = await dbConnection.votes.findFirst({
 					where: {

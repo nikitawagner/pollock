@@ -6,7 +6,7 @@ export const postPollLack = async (req, res, next) => {
 	const newPoll = {
 		title: title,
 		description: description,
-		fixed: fixed,
+		fixed: JSON.stringify(fixed),
 	};
 	try {
 		const createdPoll = await dbConnection.polls.create({
@@ -96,7 +96,7 @@ export const getPollLack = async (req, res, next) => {
 
 		if (tokenResponse) {
 			const poll_fk = tokenResponse.poll_fk;
-			const pollBody = await dbConnection.polls.findFirst({
+			const pollBodyResponse = await dbConnection.polls.findFirst({
 				where: {
 					id: poll_fk,
 				},
@@ -111,6 +111,10 @@ export const getPollLack = async (req, res, next) => {
 					},
 				},
 			});
+			const pollBody = {
+				...pollBodyResponse,
+				fixed: JSON.parse(pollBodyResponse.fixed),
+			};
 			const participants = await dbConnection.user_poll.findMany({
 				where: {
 					polls_id_fk: poll_fk,
@@ -127,7 +131,6 @@ export const getPollLack = async (req, res, next) => {
 				participantArray.push(participant.users.name);
 				participentIdArray.push(participant.users.id);
 			});
-			//console.log(participentIdArray);
 			const pollOptions = await dbConnection.poll_options.findMany({
 				where: {
 					poll_id_fk: poll_fk,
@@ -140,7 +143,6 @@ export const getPollLack = async (req, res, next) => {
 					},
 				},
 			});
-			//console.log(votesChoice);
 
 			const votes = await dbConnection.votes.findMany({
 				where: {
@@ -149,7 +151,6 @@ export const getPollLack = async (req, res, next) => {
 					},
 				},
 			});
-			//console.log(votes);
 			const statisticsArray = [];
 			pollOptions.forEach((option) => {
 				const voteIdArray = [];
@@ -186,7 +187,6 @@ export const getPollLack = async (req, res, next) => {
 			});
 
 			if (pollBody) {
-				// TODO: get participants and options
 				res.status(200).json({
 					poll: pollBody,
 					participants: participantArray,
