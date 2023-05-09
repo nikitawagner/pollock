@@ -46,7 +46,7 @@ export const postPollLack = async (req, res, next) => {
 		await dbConnection.poll_settings.create({
 			data: {
 				voices: setting.voices,
-				worst: setting.worst,
+				worst: setting.worst ? true : false,
 				deadline: setting.deadline,
 				polls: { connect: { id: pollId } },
 			},
@@ -101,7 +101,12 @@ export const getPollLack = async (req, res, next) => {
 					id: poll_fk,
 				},
 				include: {
-					poll_options: true,
+					poll_options: {
+						select: {
+							id: true,
+							text: true,
+						},
+					},
 					poll_settings: {
 						select: {
 							voices: true,
@@ -111,8 +116,21 @@ export const getPollLack = async (req, res, next) => {
 					},
 				},
 			});
+			const setting = {
+				voices: pollBodyResponse.poll_settings[0].voices,
+				worst: pollBodyResponse.poll_settings[0].worst ? true : false,
+				deadline: pollBodyResponse.poll_settings[0].deadline,
+			};
 			const pollBody = {
+				title: pollBodyResponse.title,
+				description: pollBodyResponse.description,
+				options: pollBodyResponse.poll_options,
+				setting: setting,
+				fixed: JSON.parse(pollBodyResponse.fixed),
+			};
+			const pollBodyy = {
 				...pollBodyResponse,
+				worst: pollBodyResponse.worst ? true : false,
 				fixed: JSON.parse(pollBodyResponse.fixed),
 			};
 			const participants = await dbConnection.user_poll.findMany({
@@ -210,7 +228,7 @@ export const putPollLack = async (req, res, next) => {
 	const updatedPoll = {
 		title: title,
 		description: description,
-		fixed: fixed,
+		fixed: JSON.stringify(fixed),
 	};
 	try {
 		const tokenResponse = await dbConnection.tokens.findFirst({
