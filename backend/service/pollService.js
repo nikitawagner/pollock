@@ -46,7 +46,7 @@ export const postPollLack = async (req, res, next) => {
 		await dbConnection.poll_settings.create({
 			data: {
 				voices: setting.voices,
-				worst: setting.worst ? true : false,
+				worst: setting.worst ? 1 : 0,
 				deadline: setting.deadline,
 				polls: { connect: { id: pollId } },
 			},
@@ -270,7 +270,7 @@ export const putPollLack = async (req, res, next) => {
 			await dbConnection.poll_settings.updateMany({
 				data: {
 					voices: setting.voices,
-					worst: setting.worst,
+					worst: setting.worst ? 1 : 0,
 					deadline: setting.deadline,
 				},
 				where: {
