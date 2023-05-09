@@ -21,6 +21,7 @@ export const postVoteLack = async (req, res, next) => {
 
 			if (tokenResponse) {
 				const pollId = tokenResponse.poll_fk;
+
 				const { id } = await dbConnection.users.create({
 					data: {
 						name: owner,
@@ -71,7 +72,6 @@ export const postVoteLack = async (req, res, next) => {
 						});
 					})
 				);
-				console.log(tokenId);
 				res.status(200).json({ edit: { link: "string", value: tokenValue } });
 			} else {
 				res.status(404).json({
@@ -132,6 +132,7 @@ export const getVoteLack = async (req, res, next) => {
 					},
 				});
 				const pollBody = {
+					id: pollResponse.id,
 					title: pollResponse.title,
 					description: pollResponse.description,
 					options: pollResponse.poll_options,
@@ -168,8 +169,6 @@ export const getVoteLack = async (req, res, next) => {
 						worst: choice.worst,
 					});
 				});
-				console.log(choicesObject);
-				// TODO choicesObjekt durchgehen aus poll option ... einfach id machen un din choice reinballern
 				res.status(200).json({
 					poll: {
 						body: pollBody,
@@ -207,21 +206,61 @@ export const getVoteLack = async (req, res, next) => {
 
 export const putVoteLack = async (req, res, next) => {
 	try {
-		try {
-			const token = req.params.token;
-			const tokenResponse = dbConnection.tokens.findFirst({
-				where: {
-					id: token,
+		const token = req.params.token;
+		const name = req.body.owner.name;
+		const choices = req.body.choice;
+		const tokenResponse = await dbConnection.tokens.findFirst({
+			where: {
+				value: token,
+			},
+		});
+		const pollId = tokenResponse.poll_fk;
+		const votesResponse = await dbConnection.votes.findFirst({
+			where: {
+				edit_token_id_fk: tokenResponse.id,
+			},
+		});
+		const user = votesResponse.user_id_fk;
+		const voteId = votesResponse.id;
+		const voteResponse = await dbConnection.votes.updateMany({
+			where: {
+				AND: {
+					user_id_fk: user,
+					edit_token_id_fk: tokenResponse.id,
 				},
-			});
-			console.log(tokenResponse);
-			res.status(200).json(tokenResponse);
-		} catch (error) {
-			res.status(405).json({
-				code: 405,
-				message: "Invalid input",
-			});
-		}
+			},
+			data: {
+				time: new Date(Date.now()).toISOString().slice(0, 19).replace("T", " "),
+			},
+		});
+		await dbConnection.users.update({
+			where: {
+				id: user,
+			},
+			data: {
+				name: name,
+			},
+		});
+		await dbConnection.vote_choice.deleteMany({
+			where: {
+				vote_id_fk: voteId,
+			},
+		});
+		await Promise.all(
+			choices.map(async (choice) => {
+				await dbConnection.vote_choice.create({
+					data: {
+						vote_id_fk: voteId,
+						poll_option_id_fk: choice.id,
+						worst: choice.worst ? 1 : 0,
+					},
+				});
+			})
+		);
+		res.status(200).json({
+			code: 200,
+			message: "i. O.",
+		});
 	} catch (error) {
 		console.log(error);
 		res.status(404).json({
@@ -235,7 +274,46 @@ export const deleteVoteLack = async (req, res, next) => {
 	try {
 		try {
 			const token = req.params.token;
+			const tokenResponse = await dbConnection.tokens.findFirst({
+				where: {
+					value: token,
+				},
+			});
+			if (tokenResponse && tokenResponse.type === "edit") {
+				const pollId = tokenResponse.poll_fk;
+				const tokenId = tokenResponse.id;
+				const vote = await dbConnection.votes.findFirst({
+					where: {
+						edit_token_id_fk: tokenId,
+					},
+				});
+				await dbConnection.votes.deleteMany({
+					where: {
+						edit_token_id_fk: tokenId,
+					},
+				});
+				await dbConnection.vote_choice.deleteMany({
+					where: {
+						vote_id_fk: vote.id,
+					},
+				});
+				await dbConnection.tokens.delete({
+					where: {
+						id: tokenId,
+					},
+				});
+				res.status(200).json({
+					code: 200,
+					message: "i. O.",
+				});
+			} else {
+				res.status(400).json({
+					code: 400,
+					message: "Invalid poll admin token.",
+				});
+			}
 		} catch (error) {
+			console.log(error);
 			res.status(405).json({
 				code: 405,
 				message: "Invalid input",
