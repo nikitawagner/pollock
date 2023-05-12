@@ -9,23 +9,26 @@ const PollList = ({ isAdmin }) => {
     useEffect(() => {
         const fetchPolls = async () => {
             try {
-                const response = await axios.get('/api/polls');
+                const response = await axios.get('http://localhost:49706/polls');
                 setPolls(response.data);
             } catch (error) {
                 console.error('Error fetching polls:', error);
             }
         };
 
-        fetchPolls();
+        (async () => {
+            await fetchPolls();
+        })();
     }, []);
+
 
     const handleDelete = async (pollId) => {
         try {
-            const response = await axios.delete(`/api/polls/${pollId}`);
+            const response = await axios.delete(`http://localhost:49706/polls/${pollId}`);
             if (response.status === 200) {
                 setPolls(polls.filter((poll) => poll.id !== pollId));
             } else {
-                alert('Unexpected response:', response);
+                alert('Unexpected response:'+ response);
             }
         } catch (error) {
             console.error('Error deleting poll:', error);

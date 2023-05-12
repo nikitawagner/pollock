@@ -1,30 +1,30 @@
 import axios from 'axios';
-import {useState, useEffect} from 'react';
-import {Form, Button, Container, InputGroup, FormControl} from 'react-bootstrap';
-import {useParams} from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Form, Button, Container, InputGroup, FormControl } from 'react-bootstrap';
+import { useParams } from 'react-router-dom';
 
 const UpdatePoll = () => {
-    const {token} = useParams();
+    const { token } = useParams();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [options, setOptions] = useState(['']);
     const [voices, setVoices] = useState(1);
     const [worst, setWorst] = useState(false);
     const [deadline, setDeadline] = useState('');
-    const [fixed, setFixed] = useState(false);
+    const [fixed, setFixed] = useState([]);
 
     useEffect(() => {
         const fetchPollData = async () => {
             try {
                 const response = await axios.get(`http://localhost:49706/poll/lack/${token}`);
-                const {title, description, options, setting} = response.data;
+                const { title, description, options, setting } = response.data;
                 setTitle(title);
                 setDescription(description);
                 setOptions(options.map((option) => option.text));
                 setVoices(setting.voices);
                 setWorst(setting.worst);
                 setDeadline(setting.deadline);
-                setFixed(setting.fixed);
+                setFixed(setting.fixed.map((option) => option));
             } catch (error) {
                 console.log('Error:', error.message);
             }
@@ -38,9 +38,9 @@ const UpdatePoll = () => {
         const pollData = {
             title,
             description,
-            options: options.map((option) => ({text: option})),
-            setting: {voices, worst, deadline},
-            fixed,
+            options: options.map((option) => ({ text: option })),
+            setting: { voices, worst, deadline },
+            fixed: fixed.map(option => ({ text: option })),
         };
 
         try {

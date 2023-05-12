@@ -9,8 +9,8 @@ const TakePoll = () => {
     return (
         <div>
             <ViewPoll token={token} />
-            <PollResults token={token} />
-            <Vote token={token} />
+            <PollResults token={token} options={[]} />
+            <Vote token={token} pollId={"0"} />
         </div>
     );
 };

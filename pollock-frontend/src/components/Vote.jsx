@@ -1,31 +1,36 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
-const Vote = ({ pollId }) => {
+const Vote = ({ pollId, onVote }) => {
     const [options, setOptions] = useState([]);
     const [selectedOptions, setSelectedOptions] = useState([]);
 
     useEffect(() => {
         const fetchOptions = async () => {
             try {
-                const response = await axios.get(`/api/polls/${pollId}/options`);
+                const response = await axios.get(`http://localhost:49706/polls/${pollId}/options`);
                 setOptions(response.data);
             } catch (error) {
                 console.error('Error fetching poll options:', error);
             }
         };
 
-        fetchOptions();
+        (async () => {
+            await fetchOptions();
+        })();
     }, [pollId]);
 
     const handleVote = async () => {
         try {
-            const response = await axios.post(`/api/polls/${pollId}/vote`, { options: selectedOptions });
+            const response = await axios.post(`http://localhost:49706/polls/${pollId}/vote`, { options: selectedOptions });
             if (response.status === 200) {
                 alert('Vote submitted successfully');
+                if (onVote) {
+                    onVote();
+                }
             } else {
-                alert('Unexpected response:', response);
+                alert('Unexpected response:'+ response);
             }
         } catch (error) {
             console.error('Error submitting vote:', error);
@@ -61,6 +66,7 @@ const Vote = ({ pollId }) => {
 
 Vote.propTypes = {
     pollId: PropTypes.string.isRequired,
+    onVote: PropTypes.func,
 };
 
 export default Vote;

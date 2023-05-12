@@ -8,14 +8,16 @@ const PollStatistics = ({ pollId }) => {
     useEffect(() => {
         const fetchStatistics = async () => {
             try {
-                const response = await axios.get(`/api/polls/${pollId}/statistics`);
+                const response = await axios.get(`http://localhost:49706/polls/${pollId}/statistics`);
                 setStatistics(response.data);
             } catch (error) {
                 console.error('Error fetching poll statistics:', error);
             }
         };
 
-        fetchStatistics();
+        (async () => {
+            await fetchStatistics();
+        })();
     }, [pollId]);
 
     if (!statistics) {

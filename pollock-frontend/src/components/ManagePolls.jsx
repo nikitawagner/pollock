@@ -1,9 +1,10 @@
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import {useEffect, useState} from "react";
 import CreatePoll from "./CreatePoll.jsx";
+import PropTypes from 'prop-types';
 import {Link, Outlet, useParams} from "react-router-dom";
 
-const ManagePolls = () => {
+const ManagePolls = ({ handleUpdatePoll, handleDeletePoll }) => {
     const [token, setToken] = useState("");
     const { token: urlToken } = useParams();
 
@@ -35,13 +36,13 @@ const ManagePolls = () => {
                         {token && (
                             <>
                                 <Link to={`${token}/update`}>
-                                    <Button variant="primary" className="mr-2">
+                                    <Button variant="primary" className="mr-2" onClick={() => handleUpdatePoll(token)}>
                                         Update Poll
                                     </Button>
                                 </Link>
-                                <Link to={`${token}/delete`}>
-                                    <Button variant="danger">Delete Poll</Button>
-                                </Link>
+                                <Button variant="danger" onClick={() => handleDeletePoll(token)}>
+                                    Delete Poll
+                                </Button>
                             </>
                         )}
                     </Form>
@@ -50,6 +51,11 @@ const ManagePolls = () => {
             {token && <Outlet />}
         </Container>
     );
+};
+
+ManagePolls.propTypes = {
+    handleUpdatePoll: PropTypes.func.isRequired,
+    handleDeletePoll: PropTypes.func.isRequired,
 };
 
 export default ManagePolls;

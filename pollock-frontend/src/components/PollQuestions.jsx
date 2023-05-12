@@ -18,7 +18,7 @@ const PollQuestions = ({ questions, setQuestions }) => {
                 <div key={index}>
                     <label>
                         Question {index + 1}:
-                        <input type="text" value={question} onChange={(e) => updateQuestion(index, e.target.value)} />
+                        <input type="text" value={String(question)} onChange={(e) => updateQuestion(index, e.target.value)} />
                     </label>
                 </div>
             ))}

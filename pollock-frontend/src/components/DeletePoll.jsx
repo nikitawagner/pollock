@@ -9,7 +9,7 @@ const DeletePoll = () => {
 
     const handleDelete = async () => {
         try {
-            const response = await axios.delete(`/api/polls/${adminToken}`);
+            const response = await axios.delete(`http://localhost:49706/polls/${adminToken}`);
 
             if (response.status === 200) {
                 setDeleted(true);

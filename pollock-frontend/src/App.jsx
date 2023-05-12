@@ -13,6 +13,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useState } from 'react';
 import axios from "axios";
 import ManagePolls from "./components/ManagePolls";
+import UserPoll from "./components/UserPoll.jsx";
 
 function App() {
 	const [polls, setPolls] = useState([]);
@@ -23,10 +24,10 @@ function App() {
 			if (response.status === 200) {
 				setPolls(polls.filter((poll) => poll.id !== pollId));
 			} else {
-				alert('Unexpected response:', response);
+				alert('Unexpected response:'+ response);
 			}
 		} catch (error) {
-			alert('Error deleting poll:', error.message);
+			alert('Error deleting poll:'+ error.message);
 		}
 	};
 
@@ -36,10 +37,10 @@ function App() {
 			if (response.status === 200) {
 				setPolls([...polls, response.data]);
 			} else {
-				alert('Unexpected response:', response);
+				alert('Unexpected response:'+ response);
 			}
 		} catch (error) {
-			alert('Error creating poll:', error.message);
+			alert('Error creating poll:'+ error.message);
 		}
 	};
 
@@ -49,10 +50,10 @@ function App() {
 			if (response.status === 200) {
 				setPolls(polls.map((poll) => (poll.id === pollId ? response.data : poll)));
 			} else {
-				alert('Unexpected response:', response);
+				alert('Unexpected response:'+ response);
 			}
 		} catch (error) {
-			alert('Error updating poll:', error.message);
+			alert('Error updating poll:'+ error.message);
 		}
 	};
 
@@ -69,7 +70,8 @@ function App() {
 						<Route path="/create-poll" element={<React.Fragment><CreatePoll handleCreatePoll={handleCreatePoll} /></React.Fragment>} />
 						<Route path="/view-poll/:token" element={<ViewPoll PollResults={PollResults} PollQuestions={PollQuestions} PollSettings={PollSettings} handleDeletePoll={handleDeletePoll} />} />
 						<Route path="/update-poll/:adminToken" element={<UpdatePoll handleUpdatePoll={handleUpdatePoll} />} />
-						<Route path="/manage-polls/*" element={<ManagePolls />} />
+						<Route path="/manage-polls/*" element={<ManagePolls handleCreatePoll={handleCreatePoll} handleUpdatePoll={handleUpdatePoll} handleDeletePoll={handleDeletePoll} />} />
+						<Route path="/user-poll/:token" element={<UserPoll />} />
 					</Routes>
 				</main>
 			</div>
