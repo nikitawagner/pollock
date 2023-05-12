@@ -1,13 +1,12 @@
-import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import CreatePoll from './components/CreatePoll';
 import ViewPoll from './components/ViewPoll';
 import UpdatePoll from './components/UpdatePoll';
-import PollList from './components/trash/PollList.jsx';
+//import PollList from './components/trash/PollList.jsx';
 import PollResults from './components/PollResults';
-import PollQuestions from './components/trash/PollQuestions.jsx';
-import PollSettings from './components/trash/PollSettings.jsx';
+//import PollQuestions from './components/trash/PollQuestions.jsx';
+//import PollSettings from './components/trash/PollSettings.jsx';
 import AppNavbar from './components/Navbar';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useState } from 'react';
