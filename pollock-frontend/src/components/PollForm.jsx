@@ -31,6 +31,22 @@ const PollForm = ({
         ));
     };
 
+    const renderFixedOptions = () => {
+        return fixed.map((option, index) => (
+            <InputGroup className="mb-3" key={index}>
+                <FormControl
+                    type="text"
+                    value={option}
+                    onChange={(e) => {
+                        const newFixed = [...fixed];
+                        newFixed[index] = e.target.value;
+                        setFixed(newFixed);
+                    }}
+                />
+            </InputGroup>
+        ));
+    };
+
     return (
         <Container>
             <Form onSubmit={handleSubmit}>
@@ -87,17 +103,19 @@ const PollForm = ({
                     />
                 </Form.Group>
 
-
                 <Form.Group controlId="fixed">
-                    <Form.Check
-                        type="checkbox"
-                        label="Fixed"
-                        checked={fixed}
-                        onChange={(e) => setFixed(e.target.checked)}
-                    />
+                    <Form.Label>Fixed:</Form.Label>
+                    {renderFixedOptions()}
+                    <Button
+                        variant="outline-secondary"
+                        type="button"
+                        onClick={() => setFixed([...fixed, ''])}
+                    >
+                        Add Fixed Option
+                    </Button>
                 </Form.Group>
 
-                <Button type="submit">Umfrage erstelen</Button>
+                <Button type="submit">Create Poll</Button>
             </Form>
         </Container>
     );
@@ -115,7 +133,7 @@ PollForm.propTypes = {
     setWorst: PropTypes.func.isRequired,
     deadline: PropTypes.string,
     setDeadline: PropTypes.func.isRequired,
-    fixed: PropTypes.bool.isRequired,
+    fixed: PropTypes.arrayOf(PropTypes.string).isRequired,
     setFixed: PropTypes.func.isRequired,
     handleSubmit: PropTypes.func.isRequired,
     addOption: PropTypes.func.isRequired,
