@@ -1,7 +1,10 @@
-
+import { useState } from 'react';
 import PollForm from './PollForm';
 import axios from "axios";
-import {useState} from "react";
+import Button from 'react-bootstrap/Button';
+import InputGroup from 'react-bootstrap/InputGroup';
+import FormControl from 'react-bootstrap/FormControl';
+
 
 const CreatePoll = () => {
     const [title, setTitle] = useState('');
@@ -22,23 +25,20 @@ const CreatePoll = () => {
             description,
             options: options.map((option) => ({ text: option })),
             setting: { voices, worst, deadline: new Date(deadline) },
-            fixed: fixed.map(option => ({ text: option })),
+            fixed: fixed.map(optionIndex => ({ text: options[optionIndex] })),
         };
 
         try {
             const response = await axios.post('http://localhost:49706/poll/lack', pollData);
 
             if (response.status === 200) {
-                console.log("200 ok");
                 alert('Poll created successfully: ' + JSON.stringify(response.data));
                 setAdminToken(response.data.admin.value);
                 setShareToken(response.data.share.value);
             } else {
-                console.log("200 not OK")
                 alert('Unexpected response: ' + JSON.stringify(response));
             }
         } catch (error) {
-            console.log("Error: " + error.message)
             alert('Error: ' + error.message);
         }
     };
@@ -52,6 +52,17 @@ const CreatePoll = () => {
         newOptions[index] = value;
         setOptions(newOptions);
     };
+
+    const handleCopyToClipboard = async (token) => {
+        try {
+            await navigator.clipboard.writeText(token);
+            alert('Kopieren erfolgreich');
+        } catch (error) {
+            console.error('Failed to copy text: ', error);
+        }
+    };
+
+    console.log(options); //todo: remove
 
     return (
         <>
@@ -71,16 +82,30 @@ const CreatePoll = () => {
                 fixed={fixed}
                 setFixed={setFixed}
                 handleSubmit={handleSubmit}
-                buttonText="Create Poll"
                 addOption={addOption}
                 updateOption={updateOption}
             />
-            {adminToken && shareToken && (
-                <div>
-                    <h3>Admin Token: {adminToken}</h3>
-                    <h3>Share Token: {shareToken}</h3>
-                </div>
+            {adminToken && (
+                <InputGroup className="mb-3">
+                    <InputGroup.Text id="basic-addon1">Admin Token</InputGroup.Text>
+                    <FormControl
+                        readOnly
+                        value={adminToken}
+                    />
+                    <Button variant="outline-secondary" onClick={() => handleCopyToClipboard(adminToken)}>Copy</Button>
+                </InputGroup>
             )}
+            {shareToken && (
+                <InputGroup className="mb-3">
+                    <InputGroup.Text id="basic-addon2">Share Token</InputGroup.Text>
+                    <FormControl
+                        readOnly
+                        value={shareToken}
+                    />
+                    <Button variant="outline-secondary" onClick={() => handleCopyToClipboard(shareToken)}>Copy</Button>
+                </InputGroup>
+            )}
+
         </>
     );
 };

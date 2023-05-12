@@ -23,7 +23,7 @@ const AppNavbar = () => {
                         </Link>
                     </Nav.Item>
                     <Nav.Item>
-                        <Link to="/user-poll" className="nav-link">
+                        <Link to="/enter-token" className="nav-link">
                             User Poll
                         </Link>
                     </Nav.Item>

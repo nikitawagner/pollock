@@ -9,7 +9,7 @@ const PollList = ({ isAdmin }) => {
     useEffect(() => {
         const fetchPolls = async () => {
             try {
-                const response = await axios.get('http://localhost:49706/polls');
+                const response = await axios.get('http://localhost:49706/polls');  // TODO: POllList wrong API!
                 console.log('Fetched polls:', response.data);
                 setPolls(response.data);
             } catch (error) {

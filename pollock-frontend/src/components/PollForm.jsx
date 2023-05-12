@@ -1,5 +1,5 @@
 import { Form, Button, Container, InputGroup, FormControl } from 'react-bootstrap';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 const PollForm = ({
                       title,
@@ -19,34 +19,8 @@ const PollForm = ({
                       addOption,
                       updateOption,
                   }) => {
-    /*const renderOptions = () => {
-        return options.map((option, index) => (
-            <InputGroup className="mb-3" key={index}>
-                <FormControl
-                    type="text"
-                    value={option}
-                    onChange={(e) => updateOption(index, e.target.value)}
-                />
-            </InputGroup>
-        ));
-    };*/
 
-    const renderFixedOptions = () => {
-        return fixed.map((option, index) => (
-            <InputGroup className="mb-3" key={index}>
-                <FormControl
-                    type="text"
-                    value={option}
-                    onChange={(e) => {
-                        const newFixed = [...fixed];
-                        newFixed[index] = e.target.value;
-                        setFixed(newFixed);
-                    }}
-                />
-            </InputGroup>
-        ));
-    };
-
+    console.log(options); //todo: remove
     const handleFixOptionChange = (index, event) => {
         const isChecked = event.target.checked;
 
@@ -92,6 +66,7 @@ const PollForm = ({
                                 checked={fixed.includes(index)}
                                 onChange={(e) => handleFixOptionChange(index, e)}
                             />
+                            <InputGroup.Text>Fix Option</InputGroup.Text>
                         </InputGroup>
                     ))}
                     <Button variant="outline-secondary" type="button" onClick={addOption}>
@@ -124,18 +99,6 @@ const PollForm = ({
                         value={deadline ? new Date(deadline).toISOString().substring(0, 16) : ''}
                         onChange={(e) => setDeadline(e.target.value)}
                     />
-                </Form.Group>
-
-                <Form.Group controlId="fixed">
-                    <Form.Label>Fixed:</Form.Label>
-                    {renderFixedOptions()}
-                    <Button
-                        variant="outline-secondary"
-                        type="button"
-                        onClick={() => setFixed([...fixed, ''])}
-                    >
-                        Add Fixed Option
-                    </Button>
                 </Form.Group>
 
                 <Button type="submit">Create Poll</Button>

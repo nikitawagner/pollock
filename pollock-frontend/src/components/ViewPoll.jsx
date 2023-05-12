@@ -7,6 +7,10 @@ const ViewPoll = () => {
     const [poll, setPoll] = useState(null);
 
     useEffect(() => {
+        //todo: remove later the if statement
+        if(!token){
+            console.log("Token not defined!")
+        }
         const fetchPoll = async () => {
             try {
                 const response = await axios.get(`http://localhost:49706/poll/lack/${token}`);

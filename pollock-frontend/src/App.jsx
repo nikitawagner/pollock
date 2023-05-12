@@ -6,23 +6,24 @@ import ViewPoll from './components/ViewPoll';
 import UpdatePoll from './components/UpdatePoll';
 import PollList from './components/PollList';
 import PollResults from './components/PollResults';
-import PollQuestions from './components/PollQuestions';
-import PollSettings from './components/PollSettings';
+import PollQuestions from './components/trash/PollQuestions.jsx';
+import PollSettings from './components/trash/PollSettings.jsx';
 import AppNavbar from './components/Navbar';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useState } from 'react';
 import axios from "axios";
 import ManagePolls from "./components/ManagePolls";
 import UserPoll from "./components/UserPoll.jsx";
+import EnterToken from "./components/EnterToken.jsx";
 
 function App() {
 	const [polls, setPolls] = useState([]);
 
-	const handleDeletePoll = async (pollId) => {
+	const handleDeletePoll = async (adminToken) => {
 		try {
-			const response = await axios.delete(`http://localhost:49706/polls/${pollId}`);
+			const response = await axios.delete(`http://localhost:49706/poll/lack/${adminToken}`);
 			if (response.status === 200) {
-				setPolls(polls.filter((poll) => poll.id !== pollId));
+				setPolls(polls.filter((poll) => poll.adminToken !== adminToken));
 			} else {
 				alert('Unexpected response:'+ response);
 			}
@@ -33,7 +34,7 @@ function App() {
 
 	const handleCreatePoll = async (pollData) => {
 		try {
-			const response = await axios.post('http://localhost:49706/polls', pollData);
+			const response = await axios.post('http://localhost:49706/poll/lack', pollData);
 			if (response.status === 200) {
 				setPolls([...polls, response.data]);
 			} else {
@@ -44,11 +45,11 @@ function App() {
 		}
 	};
 
-	const handleUpdatePoll = async (pollId, pollData) => {
+	const handleUpdatePoll = async (adminToken, pollData) => {
 		try {
-			const response = await axios.put(`http://localhost:49706/polls/${pollId}`, pollData);
+			const response = await axios.put(`http://localhost:49706/poll/lack/${adminToken}`, pollData);
 			if (response.status === 200) {
-				setPolls(polls.map((poll) => (poll.id === pollId ? response.data : poll)));
+				setPolls(polls.map((poll) => (poll.adminToken === adminToken ? response.data : poll)));
 			} else {
 				alert('Unexpected response:'+ response);
 			}
@@ -71,7 +72,8 @@ function App() {
 						<Route path="/view-poll/:token" element={<ViewPoll PollResults={PollResults} PollQuestions={PollQuestions} PollSettings={PollSettings} handleDeletePoll={handleDeletePoll} />} />
 						<Route path="/update-poll/:adminToken" element={<UpdatePoll handleUpdatePoll={handleUpdatePoll} />} />
 						<Route path="/manage-polls/*" element={<ManagePolls handleCreatePoll={handleCreatePoll} handleUpdatePoll={handleUpdatePoll} handleDeletePoll={handleDeletePoll} />} />
-						<Route path="/user-poll/" element={<UserPoll />} />
+						<Route path="/user-poll/:token" element={<UserPoll />} />
+						<Route path="/enter-token" element={<EnterToken />} />
 					</Routes>
 				</main>
 			</div>

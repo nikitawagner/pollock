@@ -9,7 +9,7 @@ const Vote = ({ token, onVote }) => {
     useEffect(() => {
         const fetchOptions = async () => {
             try {
-                const response = await axios.get(`http://localhost:49706/polls/${token}/options`);
+                const response = await axios.get(`http://localhost:49706/vote/lack/${token}`);
                 setOptions(response.data);
             } catch (error) {
                 console.error('Error fetching poll options:', error);
@@ -23,7 +23,7 @@ const Vote = ({ token, onVote }) => {
 
     const handleVote = async () => {
         try {
-            const response = await axios.post(`http://localhost:49706/polls/${token}/vote`, { options: selectedOptions });
+            const response = await axios.post(`http://localhost:49706/vote/lack/${token}`, { options: selectedOptions });
             if (response.status === 200) {
                 alert('Vote submitted successfully');
                 if (onVote) {
