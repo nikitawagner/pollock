@@ -19,7 +19,7 @@ const PollForm = ({
                       addOption,
                       updateOption,
                   }) => {
-    const renderOptions = () => {
+    /*const renderOptions = () => {
         return options.map((option, index) => (
             <InputGroup className="mb-3" key={index}>
                 <FormControl
@@ -29,7 +29,7 @@ const PollForm = ({
                 />
             </InputGroup>
         ));
-    };
+    };*/
 
     const renderFixedOptions = () => {
         return fixed.map((option, index) => (
@@ -45,6 +45,16 @@ const PollForm = ({
                 />
             </InputGroup>
         ));
+    };
+
+    const handleFixOptionChange = (index, event) => {
+        const isChecked = event.target.checked;
+
+        if (isChecked) {
+            setFixed([...fixed, index]);
+        } else {
+            setFixed(fixed.filter((fixedIndex) => fixedIndex !== index));
+        }
     };
 
     return (
@@ -70,7 +80,20 @@ const PollForm = ({
 
                 <Form.Group>
                     <Form.Label>Options:</Form.Label>
-                    {renderOptions()}
+                    {options.map((option, index) => (
+                        <InputGroup className="mb-3" key={index}>
+                            <FormControl
+                                type="text"
+                                value={option}
+                                onChange={(e) => updateOption(index, e.target.value)}
+                            />
+                            <InputGroup.Checkbox
+                                aria-label="Checkbox to fix the winning option"
+                                checked={fixed.includes(index)}
+                                onChange={(e) => handleFixOptionChange(index, e)}
+                            />
+                        </InputGroup>
+                    ))}
                     <Button variant="outline-secondary" type="button" onClick={addOption}>
                         Add Option
                     </Button>
@@ -131,9 +154,13 @@ PollForm.propTypes = {
     setVoices: PropTypes.func.isRequired,
     worst: PropTypes.bool.isRequired,
     setWorst: PropTypes.func.isRequired,
-    deadline: PropTypes.string,
+    deadline: PropTypes.oneOfType([
+        PropTypes.instanceOf(Date),
+        PropTypes.string,
+        PropTypes.oneOf([null])
+    ]),
     setDeadline: PropTypes.func.isRequired,
-    fixed: PropTypes.arrayOf(PropTypes.string).isRequired,
+    fixed: PropTypes.arrayOf(PropTypes.number).isRequired,
     setFixed: PropTypes.func.isRequired,
     handleSubmit: PropTypes.func.isRequired,
     addOption: PropTypes.func.isRequired,

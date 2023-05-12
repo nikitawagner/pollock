@@ -2,14 +2,14 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-const Vote = ({ pollId, onVote }) => {
+const Vote = ({ token, onVote }) => {
     const [options, setOptions] = useState([]);
     const [selectedOptions, setSelectedOptions] = useState([]);
 
     useEffect(() => {
         const fetchOptions = async () => {
             try {
-                const response = await axios.get(`http://localhost:49706/polls/${pollId}/options`);
+                const response = await axios.get(`http://localhost:49706/polls/${token}/options`);
                 setOptions(response.data);
             } catch (error) {
                 console.error('Error fetching poll options:', error);
@@ -19,11 +19,11 @@ const Vote = ({ pollId, onVote }) => {
         (async () => {
             await fetchOptions();
         })();
-    }, [pollId]);
+    }, [token]);
 
     const handleVote = async () => {
         try {
-            const response = await axios.post(`http://localhost:49706/polls/${pollId}/vote`, { options: selectedOptions });
+            const response = await axios.post(`http://localhost:49706/polls/${token}/vote`, { options: selectedOptions });
             if (response.status === 200) {
                 alert('Vote submitted successfully');
                 if (onVote) {
@@ -65,7 +65,7 @@ const Vote = ({ pollId, onVote }) => {
 };
 
 Vote.propTypes = {
-    pollId: PropTypes.string.isRequired,
+    token: PropTypes.string.isRequired,
     onVote: PropTypes.func,
 };
 

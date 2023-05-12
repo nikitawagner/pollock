@@ -4,17 +4,37 @@ import TakePoll from './TakePoll';
 import PollStatistics from './PollStatistics';
 
 const UserPoll = () => {
-    const { token } = useParams();
+    const { token: initialToken } = useParams();
+    const [token, setToken] = useState(initialToken);
     const [hasVoted, setHasVoted] = useState(false);
 
     const handleVote = () => {
         setHasVoted(true);
     };
 
+    const handleTokenSubmit = (event) => {
+        event.preventDefault();
+        //ToDO: Should we validate the token somehow?
+        setToken(event.target.tokenInput.value);
+    };
+
     return (
         <div>
-            <TakePoll pollId={token} onVote={handleVote} />
-            {hasVoted && <PollStatistics pollId={token} />}
+            {!token &&
+                <form onSubmit={handleTokenSubmit}>
+                    <label>
+                        Enter share token:
+                        <input type="text" name="tokenInput" />
+                    </label>
+                    <input type="submit" value="Submit" />
+                </form>
+            }
+            {token &&
+                <>
+                    <TakePoll pollId={token} onVote={handleVote} />
+                    {hasVoted && <PollStatistics pollId={token} />}
+                </>
+            }
         </div>
     );
 };

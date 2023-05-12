@@ -71,7 +71,7 @@ function App() {
 						<Route path="/view-poll/:token" element={<ViewPoll PollResults={PollResults} PollQuestions={PollQuestions} PollSettings={PollSettings} handleDeletePoll={handleDeletePoll} />} />
 						<Route path="/update-poll/:adminToken" element={<UpdatePoll handleUpdatePoll={handleUpdatePoll} />} />
 						<Route path="/manage-polls/*" element={<ManagePolls handleCreatePoll={handleCreatePoll} handleUpdatePoll={handleUpdatePoll} handleDeletePoll={handleDeletePoll} />} />
-						<Route path="/user-poll/:token" element={<UserPoll />} />
+						<Route path="/user-poll/" element={<UserPoll />} />
 					</Routes>
 				</main>
 			</div>

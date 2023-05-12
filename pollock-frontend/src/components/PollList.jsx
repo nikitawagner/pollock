@@ -10,6 +10,7 @@ const PollList = ({ isAdmin }) => {
         const fetchPolls = async () => {
             try {
                 const response = await axios.get('http://localhost:49706/polls');
+                console.log('Fetched polls:', response.data);
                 setPolls(response.data);
             } catch (error) {
                 console.error('Error fetching polls:', error);
@@ -22,11 +23,11 @@ const PollList = ({ isAdmin }) => {
     }, []);
 
 
-    const handleDelete = async (pollId) => {
+    const handleDelete = async (pollToken) => {
         try {
-            const response = await axios.delete(`http://localhost:49706/polls/${pollId}`);
+            const response = await axios.delete(`http://localhost:49706/polls/${pollToken}`);
             if (response.status === 200) {
-                setPolls(polls.filter((poll) => poll.id !== pollId));
+                setPolls(polls.filter((poll) => poll.token !== pollToken));
             } else {
                 alert('Unexpected response:'+ response);
             }
@@ -54,7 +55,7 @@ const PollList = ({ isAdmin }) => {
                                 <button
                                     type="button"
                                     className="btn btn-danger"
-                                    onClick={() => handleDelete(poll.id)}
+                                    onClick={() => handleDelete(poll.token)}
                                 >
                                     Delete Poll
                                 </button>

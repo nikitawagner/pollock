@@ -23,7 +23,7 @@ const UpdatePoll = () => {
                 setOptions(options.map((option) => option.text));
                 setVoices(setting.voices);
                 setWorst(setting.worst);
-                setDeadline(setting.deadline);
+                setDeadline(setting.deadline ? new Date(setting.deadline).toISOString().substring(0, 16) : '');
                 setFixed(setting.fixed.map((option) => option));
             } catch (error) {
                 console.log('Error:', error.message);

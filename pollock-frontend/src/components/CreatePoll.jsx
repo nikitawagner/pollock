@@ -21,7 +21,7 @@ const CreatePoll = () => {
             title,
             description,
             options: options.map((option) => ({ text: option })),
-            setting: { voices, worst, deadline },
+            setting: { voices, worst, deadline: new Date(deadline) },
             fixed: fixed.map(option => ({ text: option })),
         };
 
