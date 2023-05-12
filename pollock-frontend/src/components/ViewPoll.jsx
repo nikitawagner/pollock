@@ -13,7 +13,7 @@ const ViewPoll = () => {
         }
         const fetchPoll = async () => {
             try {
-                const response = await axios.get(`http://localhost:49706/poll/lack/${token}`);
+                const response = await axios.get(`http://localhost:49706/vote/lack/${token}`);
                 setPoll(response.data);
             } catch (error) {
                 console.error("Error fetching poll data:", error);

@@ -9,7 +9,7 @@ const PollList = ({ isAdmin }) => {
     useEffect(() => {
         const fetchPolls = async () => {
             try {
-                const response = await axios.get('http://localhost:49706/polls');  // TODO: POllList wrong API!
+                const response = await axios.get('http://localhost:49706/vote/lack');
                 console.log('Fetched polls:', response.data);
                 setPolls(response.data);
             } catch (error) {
@@ -23,11 +23,11 @@ const PollList = ({ isAdmin }) => {
     }, []);
 
 
-    const handleDelete = async (pollToken) => {
+    const handleDelete = async (adminToken) => {
         try {
-            const response = await axios.delete(`http://localhost:49706/polls/${pollToken}`);
+            const response = await axios.delete(`http://localhost:49706/vote/lack/${adminToken}`);
             if (response.status === 200) {
-                setPolls(polls.filter((poll) => poll.token !== pollToken));
+                setPolls(polls.filter((poll) => poll.adminToken !== adminToken));
             } else {
                 alert('Unexpected response:'+ response);
             }
@@ -55,7 +55,7 @@ const PollList = ({ isAdmin }) => {
                                 <button
                                     type="button"
                                     className="btn btn-danger"
-                                    onClick={() => handleDelete(poll.token)}
+                                    onClick={() => handleDelete(poll.adminToken)}
                                 >
                                     Delete Poll
                                 </button>

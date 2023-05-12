@@ -13,11 +13,6 @@ const AppNavbar = () => {
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="ml-auto">
                     <Nav.Item>
-                        <Link to="/" className="nav-link">
-                            Home
-                        </Link>
-                    </Nav.Item>
-                    <Nav.Item>
                         <Link to="/manage-polls" className="nav-link">
                             Manage Polls
                         </Link>

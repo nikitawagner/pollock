@@ -9,7 +9,7 @@ const PollStatistics = ({ pollId }) => {
 
         const fetchStatistics = async () => {
             try {
-                const response = await axios.get(`http://localhost:49706/poll/lack/${pollId}`);
+                const response = await axios.get(`http://localhost:49706/vote/lack/${pollId}`);
                 setStatistics(response.data);
             } catch (error) {
                 console.error('Error fetching poll statistics:', error);

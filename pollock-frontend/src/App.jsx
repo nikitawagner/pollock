@@ -4,7 +4,7 @@ import './App.css';
 import CreatePoll from './components/CreatePoll';
 import ViewPoll from './components/ViewPoll';
 import UpdatePoll from './components/UpdatePoll';
-import PollList from './components/PollList';
+import PollList from './components/trash/PollList.jsx';
 import PollResults from './components/PollResults';
 import PollQuestions from './components/trash/PollQuestions.jsx';
 import PollSettings from './components/trash/PollSettings.jsx';
@@ -67,9 +67,8 @@ function App() {
 				</header>
 				<main>
 					<Routes>
-						<Route path="/" element={<PollList polls={polls} />} />
-						<Route path="/create-poll" element={<React.Fragment><CreatePoll handleCreatePoll={handleCreatePoll} /></React.Fragment>} />
-						<Route path="/view-poll/:token" element={<ViewPoll PollResults={PollResults} PollQuestions={PollQuestions} PollSettings={PollSettings} handleDeletePoll={handleDeletePoll} />} />
+						<Route path="/create-poll" element={<CreatePoll handleCreatePoll={handleCreatePoll} />} />
+						<Route path="/view-poll/:token" element={<ViewPoll PollResults={PollResults} handleDeletePoll={handleDeletePoll} />} />
 						<Route path="/update-poll/:adminToken" element={<UpdatePoll handleUpdatePoll={handleUpdatePoll} />} />
 						<Route path="/manage-polls/*" element={<ManagePolls handleCreatePoll={handleCreatePoll} handleUpdatePoll={handleUpdatePoll} handleDeletePoll={handleDeletePoll} />} />
 						<Route path="/user-poll/:token" element={<UserPoll />} />
