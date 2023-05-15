@@ -18,7 +18,10 @@ app.use(cors());
 
 app.use("/poll", pollRouter);
 app.use("/vote", voteRouter);
+app.get("/", (req, res, next) => {
+	res.status(200).json({ message: "Hallo" });
+});
 
-app.listen(49706, () => {
+app.listen(8080, () => {
 	console.log("Listening on Port 49706");
 });

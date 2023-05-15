@@ -2,6 +2,7 @@ import dbConnection from "../prisma/dbConnection.js";
 import { v4 } from "uuid";
 
 export const postVoteLack = async (req, res, next) => {
+	console.log(req.body);
 	try {
 		const token = req.params.token;
 		const owner = req.body.owner.name;

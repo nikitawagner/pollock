@@ -3,6 +3,7 @@ import { v4 } from "uuid";
 
 export const postPollLack = async (req, res, next) => {
 	const { title, description, options, setting, fixed } = req.body;
+	console.log(req.body);
 	const newPoll = {
 		title: title,
 		description: description,
@@ -42,15 +43,27 @@ export const postPollLack = async (req, res, next) => {
 				});
 			})
 		);
-
-		await dbConnection.poll_settings.create({
-			data: {
-				voices: setting.voices,
-				worst: setting.worst ? 1 : 0,
-				deadline: setting.deadline,
-				polls: { connect: { id: pollId } },
-			},
-		});
+		if (setting) {
+			await dbConnection.poll_settings.create({
+				data: {
+					voices: setting.voices ? setting.voices : 1,
+					worst: setting.worst ? 1 : 0,
+					deadline: setting.deadline
+						? setting.deadline
+						: "2029-12-31T23:59:59+02:00",
+					polls: { connect: { id: pollId } },
+				},
+			});
+		} else {
+			await dbConnection.poll_settings.create({
+				data: {
+					voices: 1,
+					worst: 0,
+					deadline: "2029-12-31T23:59:59+02:00",
+					polls: { connect: { id: pollId } },
+				},
+			});
+		}
 		const tokens = await dbConnection.tokens.findMany({
 			where: {
 				poll_fk: pollId,
@@ -116,10 +129,20 @@ export const getPollLack = async (req, res, next) => {
 					},
 				},
 			});
+			console.log(new Date(pollBodyResponse.poll_settings[0].deadline));
+			console.log(
+				new Date(pollBodyResponse.poll_settings[0].deadline) ==
+					new Date("2029-12-31T21:59:59.000Z")
+			);
+			console.log(new Date("2029-12-31T21:59:59.000Z"));
 			const setting = {
 				voices: pollBodyResponse.poll_settings[0].voices,
 				worst: pollBodyResponse.poll_settings[0].worst ? true : false,
-				deadline: pollBodyResponse.poll_settings[0].deadline,
+				deadline:
+					pollBodyResponse.poll_settings[0].deadline ==
+					"2029-12-31T21:59:59.000Z"
+						? null
+						: null,
 			};
 			const pollBody = {
 				title: pollBodyResponse.title,
@@ -206,7 +229,7 @@ export const getPollLack = async (req, res, next) => {
 
 			if (pollBody) {
 				res.status(200).json({
-					poll: pollBody,
+					poll: { body: pollBody },
 					participants: participantArray,
 					options: finalArray,
 				});
@@ -315,7 +338,6 @@ export const deletePollLack = async (req, res, next) => {
 			res.status(200).json({
 				code: 200,
 				message: "i. O.",
-				data: deleteResponse,
 			});
 		} else {
 			res.status(400).json({
