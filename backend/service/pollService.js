@@ -3,7 +3,6 @@ import { v4 } from "uuid";
 
 export const postPollLack = async (req, res, next) => {
 	const { title, description, options, setting, fixed } = req.body;
-	console.log(req.body);
 	const newPoll = {
 		title: title,
 		description: description,
@@ -37,6 +36,7 @@ export const postPollLack = async (req, res, next) => {
 			options.map(async (option) => {
 				await dbConnection.poll_options.create({
 					data: {
+						given_id: option.id,
 						text: option.text,
 						polls: { connect: { id: pollId } },
 					},
@@ -46,20 +46,18 @@ export const postPollLack = async (req, res, next) => {
 		if (setting) {
 			await dbConnection.poll_settings.create({
 				data: {
-					voices: setting.voices ? setting.voices : 1,
+					voices: setting.voices ? setting.voices : null,
 					worst: setting.worst ? 1 : 0,
-					deadline: setting.deadline
-						? setting.deadline
-						: "2029-12-31T23:59:59+02:00",
+					deadline: setting.deadline,
 					polls: { connect: { id: pollId } },
 				},
 			});
 		} else {
 			await dbConnection.poll_settings.create({
 				data: {
-					voices: 1,
+					voices: null,
 					worst: 0,
-					deadline: "2029-12-31T23:59:59+02:00",
+					deadline: null,
 					polls: { connect: { id: pollId } },
 				},
 			});
@@ -116,6 +114,7 @@ export const getPollLack = async (req, res, next) => {
 				include: {
 					poll_options: {
 						select: {
+							given_id: true,
 							id: true,
 							text: true,
 						},
@@ -129,31 +128,40 @@ export const getPollLack = async (req, res, next) => {
 					},
 				},
 			});
-			console.log(new Date(pollBodyResponse.poll_settings[0].deadline));
-			console.log(
-				new Date(pollBodyResponse.poll_settings[0].deadline) ==
-					new Date("2029-12-31T21:59:59.000Z")
-			);
-			console.log(new Date("2029-12-31T21:59:59.000Z"));
 			const setting = {
 				voices: pollBodyResponse.poll_settings[0].voices,
 				worst: pollBodyResponse.poll_settings[0].worst ? true : false,
-				deadline:
-					pollBodyResponse.poll_settings[0].deadline ==
-					"2029-12-31T21:59:59.000Z"
-						? null
-						: null,
+				deadline: pollBodyResponse.poll_settings[0].deadline
+					? pollBodyResponse.poll_settings[0].deadline.substring(
+							0,
+							pollBodyResponse.poll_settings[0].deadline().length - 1
+					  )
+					: null,
 			};
+			const formattedArray = [];
+			pollBodyResponse.poll_options.map((option) => {
+				formattedArray.push({
+					id: option.given_id,
+					text: option.text,
+				});
+			});
+			const shareToken = await dbConnection.tokens.findMany({
+				where: {
+					AND: {
+						type: "share",
+						poll_fk: poll_fk,
+					},
+				},
+				select: {
+					link: true,
+					value: true,
+				},
+			});
 			const pollBody = {
 				title: pollBodyResponse.title,
 				description: pollBodyResponse.description,
-				options: pollBodyResponse.poll_options,
+				options: formattedArray,
 				setting: setting,
-				fixed: JSON.parse(pollBodyResponse.fixed),
-			};
-			const pollBodyy = {
-				...pollBodyResponse,
-				worst: pollBodyResponse.worst ? true : false,
 				fixed: JSON.parse(pollBodyResponse.fixed),
 			};
 			const participants = await dbConnection.user_poll.findMany({
@@ -169,7 +177,7 @@ export const getPollLack = async (req, res, next) => {
 			const participantArray = [];
 			const participentIdArray = [];
 			participants.map((participant) => {
-				participantArray.push(participant.users.name);
+				participantArray.push({ name: participant.users.name });
 				participentIdArray.push(participant.users.id);
 			});
 			const pollOptions = await dbConnection.poll_options.findMany({
@@ -229,7 +237,7 @@ export const getPollLack = async (req, res, next) => {
 
 			if (pollBody) {
 				res.status(200).json({
-					poll: { body: pollBody },
+					poll: { body: pollBody, share: shareToken[0] },
 					participants: participantArray,
 					options: finalArray,
 				});
