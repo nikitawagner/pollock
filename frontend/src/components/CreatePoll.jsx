@@ -43,7 +43,8 @@ const CreatePoll = () => {
 			options: options,
 			setting: {
 				worst: worst,
-				deadline: new Date(`${date}T${time}Z`).toISOString(),
+				deadline:
+					time && date ? new Date(`${date}T${time}Z`).toISOString() : null,
 				voices: Number(voices),
 			},
 			fixed: [0],

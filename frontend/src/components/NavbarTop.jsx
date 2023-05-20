@@ -8,21 +8,27 @@ const NavbarTop = () => {
 	return (
 		<Navbar bg="light" variant="light">
 			<Container>
-				<Navbar.Brand>Pollack</Navbar.Brand>
+				<Navbar.Brand
+					onClick={() => {
+						navigate("/");
+					}}
+				>
+					Pollack
+				</Navbar.Brand>
 				<Nav className="me-auto">
 					<Nav.Link
 						onClick={() => {
 							navigate("/create");
 						}}
 					>
-						ERSTELLEN
+						UMFRAGE ERSTELLEN
 					</Nav.Link>
 					<Nav.Link
 						onClick={() => {
 							navigate("/edit");
 						}}
 					>
-						BEARBEITEN
+						UMFRAGE BEARBEITEN
 					</Nav.Link>
 				</Nav>
 			</Container>
