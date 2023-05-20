@@ -36,21 +36,32 @@ export const postPollLack = async (req, res, next) => {
 			options.map(async (option) => {
 				await dbConnection.poll_options.create({
 					data: {
+						given_id: option.id,
 						text: option.text,
 						polls: { connect: { id: pollId } },
 					},
 				});
 			})
 		);
-
-		await dbConnection.poll_settings.create({
-			data: {
-				voices: setting.voices,
-				worst: setting.worst ? 1 : 0,
-				deadline: setting.deadline,
-				polls: { connect: { id: pollId } },
-			},
-		});
+		if (setting) {
+			await dbConnection.poll_settings.create({
+				data: {
+					voices: setting.voices ? setting.voices : null,
+					worst: setting.worst ? 1 : 0,
+					deadline: setting.deadline,
+					polls: { connect: { id: pollId } },
+				},
+			});
+		} else {
+			await dbConnection.poll_settings.create({
+				data: {
+					voices: null,
+					worst: 0,
+					deadline: null,
+					polls: { connect: { id: pollId } },
+				},
+			});
+		}
 		const tokens = await dbConnection.tokens.findMany({
 			where: {
 				poll_fk: pollId,
@@ -103,6 +114,7 @@ export const getPollLack = async (req, res, next) => {
 				include: {
 					poll_options: {
 						select: {
+							given_id: true,
 							id: true,
 							text: true,
 						},
@@ -119,18 +131,37 @@ export const getPollLack = async (req, res, next) => {
 			const setting = {
 				voices: pollBodyResponse.poll_settings[0].voices,
 				worst: pollBodyResponse.poll_settings[0].worst ? true : false,
-				deadline: pollBodyResponse.poll_settings[0].deadline,
+				deadline: pollBodyResponse.poll_settings[0].deadline
+					? pollBodyResponse.poll_settings[0].deadline.substring(
+						0,
+						pollBodyResponse.poll_settings[0].deadline().length - 1
+					)
+					: null,
 			};
+			const formattedArray = [];
+			pollBodyResponse.poll_options.map((option) => {
+				formattedArray.push({
+					id: option.given_id,
+					text: option.text,
+				});
+			});
+			const shareToken = await dbConnection.tokens.findMany({
+				where: {
+					AND: {
+						type: "share",
+						poll_fk: poll_fk,
+					},
+				},
+				select: {
+					link: true,
+					value: true,
+				},
+			});
 			const pollBody = {
 				title: pollBodyResponse.title,
 				description: pollBodyResponse.description,
-				options: pollBodyResponse.poll_options,
+				options: formattedArray,
 				setting: setting,
-				fixed: JSON.parse(pollBodyResponse.fixed),
-			};
-			const pollBodyy = {
-				...pollBodyResponse,
-				worst: pollBodyResponse.worst ? true : false,
 				fixed: JSON.parse(pollBodyResponse.fixed),
 			};
 			const participants = await dbConnection.user_poll.findMany({
@@ -146,7 +177,7 @@ export const getPollLack = async (req, res, next) => {
 			const participantArray = [];
 			const participentIdArray = [];
 			participants.map((participant) => {
-				participantArray.push(participant.users.name);
+				participantArray.push({ name: participant.users.name });
 				participentIdArray.push(participant.users.id);
 			});
 			const pollOptions = await dbConnection.poll_options.findMany({
@@ -206,7 +237,7 @@ export const getPollLack = async (req, res, next) => {
 
 			if (pollBody) {
 				res.status(200).json({
-					poll: pollBody,
+					poll: { body: pollBody, share: shareToken[0] },
 					participants: participantArray,
 					options: finalArray,
 				});
@@ -315,7 +346,6 @@ export const deletePollLack = async (req, res, next) => {
 			res.status(200).json({
 				code: 200,
 				message: "i. O.",
-				data: deleteResponse,
 			});
 		} else {
 			res.status(400).json({

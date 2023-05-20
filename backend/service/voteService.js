@@ -6,6 +6,8 @@ export const postVoteLack = async (req, res, next) => {
 		const token = req.params.token;
 		const owner = req.body.owner.name;
 		const choices = req.body.choice;
+		console.log(req.params.token);
+		console.log(req.body);
 
 		if (!owner || !choices) {
 			res.status(405).json({
@@ -63,15 +65,24 @@ export const postVoteLack = async (req, res, next) => {
 				const voteId = voteResponse.id;
 				await Promise.all(
 					choices.map(async (choice) => {
+						const optionId = await dbConnection.poll_options.findMany({
+							where: {
+								AND: {
+									given_id: choice.id,
+									poll_id_fk: pollId,
+								},
+							},
+						});
 						await dbConnection.vote_choice.create({
 							data: {
-								poll_option_id_fk: choice.id,
+								poll_option_id_fk: optionId[0].id,
 								vote_id_fk: voteId,
 								worst: choice.worst ? 1 : 0,
 							},
 						});
 					})
 				);
+				console.log(tokenValue);
 				res.status(200).json({ edit: { link: "string", value: tokenValue } });
 			} else {
 				res.status(404).json({
@@ -118,7 +129,7 @@ export const getVoteLack = async (req, res, next) => {
 					include: {
 						poll_options: {
 							select: {
-								id: true,
+								given_id: true,
 								text: true,
 							},
 						},
@@ -135,15 +146,22 @@ export const getVoteLack = async (req, res, next) => {
 				const setting = {
 					voices: pollResponse.poll_settings[0].voices,
 					worst: pollResponse.poll_settings[0].worst ? true : false,
-					deadline: pollResponse.poll_settings[0].deadline,
+					deadline: pollResponse.poll_settings[0].deadline
+						? pollResponse.poll_settings[0].deadline
+						: null,
 				};
-
+				const formattedArray = [];
+				pollResponse.poll_options.map((option) => {
+					formattedArray.push({
+						id: option.given_id,
+						text: option.text,
+					});
+				});
 				const pollBody = {
-					id: pollResponse.id,
 					title: pollResponse.title,
 					description: pollResponse.description,
-					options: pollResponse.poll_options,
-					settings: setting,
+					options: formattedArray,
+					setting: setting,
 					fixed: JSON.parse(pollResponse.fixed),
 				};
 				const voteResponse = await dbConnection.votes.findFirst({
@@ -170,12 +188,24 @@ export const getVoteLack = async (req, res, next) => {
 					},
 				});
 				const choicesObject = [];
-				choicesResponse.map((choice) => {
-					choicesObject.push({
-						id: choice.poll_option_id_fk,
-						worst: choice.worst ? true : false,
-					});
-				});
+				await Promise.all(
+					choicesResponse.map(async (choice) => {
+						const givenIdObject = await dbConnection.poll_options.findMany({
+							where: {
+								id: choice.poll_option_id_fk,
+							},
+						});
+						choicesObject.push({
+							id: givenIdObject.length > 0 ? givenIdObject[0].given_id : 1,
+							worst: choice.worst ? true : false,
+						});
+						console.log("Owner: " + owner);
+						console.log("CHOICE OBJECT von Carl");
+						console.log(choice);
+						console.log("GIVEN ID OBJECT after finding the poll");
+						console.log(givenIdObject);
+					})
+				);
 				res.status(200).json({
 					poll: {
 						body: pollBody,
@@ -187,7 +217,7 @@ export const getVoteLack = async (req, res, next) => {
 						},
 						choice: choicesObject,
 					},
-					time: voteResponse.time,
+					time: null,
 				});
 			} else {
 				res.status(404).json({
@@ -221,53 +251,62 @@ export const putVoteLack = async (req, res, next) => {
 				value: token,
 			},
 		});
-		const pollId = tokenResponse.poll_fk;
-		const votesResponse = await dbConnection.votes.findFirst({
-			where: {
-				edit_token_id_fk: tokenResponse.id,
-			},
-		});
-		const user = votesResponse.user_id_fk;
-		const voteId = votesResponse.id;
-		const voteResponse = await dbConnection.votes.updateMany({
-			where: {
-				AND: {
-					user_id_fk: user,
+		if (tokenResponse) {
+			const votesResponse = await dbConnection.votes.findFirst({
+				where: {
 					edit_token_id_fk: tokenResponse.id,
 				},
-			},
-			data: {
-				time: new Date(Date.now()).toISOString().slice(0, 19).replace("T", " "),
-			},
-		});
-		await dbConnection.users.update({
-			where: {
-				id: user,
-			},
-			data: {
-				name: name,
-			},
-		});
-		await dbConnection.vote_choice.deleteMany({
-			where: {
-				vote_id_fk: voteId,
-			},
-		});
-		await Promise.all(
-			choices.map(async (choice) => {
-				await dbConnection.vote_choice.create({
-					data: {
-						vote_id_fk: voteId,
-						poll_option_id_fk: choice.id,
-						worst: choice.worst ? 1 : 0,
+			});
+			const user = votesResponse.user_id_fk;
+			const voteId = votesResponse.id;
+			const voteResponse = await dbConnection.votes.updateMany({
+				where: {
+					AND: {
+						user_id_fk: user,
+						edit_token_id_fk: tokenResponse.id,
 					},
-				});
-			})
-		);
-		res.status(200).json({
-			code: 200,
-			message: "i. O.",
-		});
+				},
+				data: {
+					time: new Date(Date.now())
+						.toISOString()
+						.slice(0, 19)
+						.replace("T", " "),
+				},
+			});
+			await dbConnection.users.update({
+				where: {
+					id: user,
+				},
+				data: {
+					name: name,
+				},
+			});
+			await dbConnection.vote_choice.deleteMany({
+				where: {
+					vote_id_fk: voteId,
+				},
+			});
+			await Promise.all(
+				choices.map(async (choice) => {
+					await dbConnection.vote_choice.create({
+						data: {
+							vote_id_fk: voteId,
+							poll_option_id_fk: choice.id,
+							worst: choice.worst ? 1 : 0,
+						},
+					});
+				})
+			);
+			res.status(200).json({
+				code: 200,
+				message: "i. O.",
+			});
+		} else {
+			res.status(404).json({
+				code: 404,
+				message: "Poll not found.",
+			});
+		}
 	} catch (error) {
 		console.log(error);
 		res.status(404).json({
