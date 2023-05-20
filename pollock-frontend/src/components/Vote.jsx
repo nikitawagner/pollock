@@ -1,25 +1,9 @@
 import axios from 'axios';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-const Vote = ({ token, onVote }) => {
-    const [options, setOptions] = useState([]);
+const Vote = ({ token, options, onVote }) => {
     const [selectedOptions, setSelectedOptions] = useState([]);
-
-    useEffect(() => {
-        const fetchOptions = async () => {
-            try {
-                const response = await axios.get(`http://localhost:49706/vote/lack/${token}`);
-                setOptions(response.data);
-            } catch (error) {
-                console.error('Error fetching poll options:', error);
-            }
-        };
-
-        (async () => {
-            await fetchOptions();
-        })();
-    }, [token]);
 
     const handleVote = async () => {
         try {
@@ -66,6 +50,7 @@ const Vote = ({ token, onVote }) => {
 
 Vote.propTypes = {
     token: PropTypes.string.isRequired,
+    options: PropTypes.array.isRequired,
     onVote: PropTypes.func,
 };
 

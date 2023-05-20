@@ -1,28 +1,6 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
-const ViewPoll = () => {
-    const { token } = useParams();
-    const [poll, setPoll] = useState(null);
-
-    useEffect(() => {
-        //todo: remove later the if statement
-        if(!token){
-            console.log("Token not defined!")
-        }
-        const fetchPoll = async () => {
-            try {
-                const response = await axios.get(`http://localhost:49706/vote/lack/${token}`);
-                setPoll(response.data);
-            } catch (error) {
-                console.error("Error fetching poll data:", error);
-            }
-        };
-
-        fetchPoll();
-    }, [token]);
-
+const ViewPoll = ({ poll }) => {
     if (!poll) {
         return <div>Loading...</div>;
     }
@@ -38,6 +16,10 @@ const ViewPoll = () => {
             </ul>
         </div>
     );
+};
+
+ViewPoll.propTypes = {
+    poll: PropTypes.object,
 };
 
 export default ViewPoll;
