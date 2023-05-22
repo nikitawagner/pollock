@@ -36,7 +36,6 @@ export const postPollLack = async (req, res, next) => {
 			options.map(async (option) => {
 				await dbConnection.poll_options.create({
 					data: {
-						given_id: option.id,
 						text: option.text,
 						polls: { connect: { id: pollId } },
 					},
@@ -114,8 +113,7 @@ export const getPollLack = async (req, res, next) => {
 				include: {
 					poll_options: {
 						select: {
-							given_id: true,
-							id: true,
+														id: true,
 							text: true,
 						},
 					},
@@ -131,10 +129,10 @@ export const getPollLack = async (req, res, next) => {
 			const setting = {
 				voices: pollBodyResponse.poll_settings[0].voices,
 				worst: pollBodyResponse.poll_settings[0].worst ? true : false,
-				deadline: pollBodyResponse.poll_settings[0].deadline
-					? pollBodyResponse.poll_settings[0].deadline.substring(
+				deadline: pollBodyResponse.poll_settings[0].deadline && pollBodyResponse.poll_settings[0].deadline instanceof Date
+					? pollBodyResponse.poll_settings[0].deadline.toISOString().substring(
 						0,
-						pollBodyResponse.poll_settings[0].deadline().length - 1
+						pollBodyResponse.poll_settings[0].deadline.toISOString().length - 1
 					)
 					: null,
 			};
