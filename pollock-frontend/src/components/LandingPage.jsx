@@ -3,7 +3,9 @@ import InputGroup from "react-bootstrap/InputGroup";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
 import Form from "react-bootstrap/Form";
+import FormControl from "react-bootstrap/FormControl";
 import Statistics from "./Statistics.jsx";
+import UpdateVote from "./UpdateVote.jsx";
 import "./Landingpage.css";
 
 const Landingpage = () => {
@@ -42,14 +44,15 @@ const Landingpage = () => {
         if (value) {
             setSelectedChoice((prevState) => [
                 ...prevState,
-                { given_id: option.id, text: option.text },
+                { id: option.id, worst: false },
             ]);
         } else {
             setSelectedChoice((prevState) =>
-                prevState.filter((choice) => choice.given_id !== option.id)
+                prevState.filter((choice) => choice.id !== option.id)
             );
         }
     };
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -73,6 +76,15 @@ const Landingpage = () => {
             }
         } catch (error) {
             console.error("Error: " + error.message);
+        }
+    };
+
+    const handleCopyToClipboard = async (token) => {
+        try {
+            await navigator.clipboard.writeText(token);
+            alert('Kopieren erfolgreich');
+        } catch (error) {
+            console.error('Kopieren nicht erfolgreich: ', error);
         }
     };
 
@@ -100,7 +112,22 @@ const Landingpage = () => {
                 </InputGroup>
             ) : success ? (
                 <>
-                    Edit Token: {editToken}
+                    <InputGroup className="mb-3">
+                        <InputGroup.Text id="basic-addon3">Edit Token</InputGroup.Text>
+                        <FormControl
+                            readOnly
+                            value={editToken}
+                        />
+                        <Button variant="outline-secondary" onClick={() => handleCopyToClipboard(editToken)}>Copy</Button>
+                    </InputGroup>
+                    {success && (
+                        <UpdateVote
+                            editToken={editToken}
+                            name={name}
+                            selectedChoice={selectedChoice}
+                            voices={voices}
+                        />
+                    )}
                     <Statistics token={token} />
                 </>
             ) : (

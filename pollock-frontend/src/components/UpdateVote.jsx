@@ -1,57 +1,52 @@
-import axios from 'axios';
-import { useState } from 'react';
+import { useState } from "react";
+import Button from "react-bootstrap/Button";
+import axios from "axios";
 import PropTypes from 'prop-types';
 
-const UpdateVote = ({ token, options, onVoteUpdate }) => {
-    const [selectedOptions, setSelectedOptions] = useState([]);
+const UpdateVote = ({ editToken, name, selectedChoice, voices }) => {
+    const [updated, setUpdated] = useState(false);
 
-    const handleVoteUpdate = async () => {
+    const updateVote = async () => {
         try {
-            const response = await axios.put(`http://localhost:49706/vote/lack/${token}`, { options: selectedOptions });
-            if (response.status === 200) {
-                alert('Vote updated successfully');
-                if (onVoteUpdate) {
-                    onVoteUpdate();
+            const response = await axios.put(
+                `http://localhost:49706/vote/lack/${editToken}`,
+                {
+                    owner: {
+                        name: name,
+                    },
+                    choice: selectedChoice,
                 }
+            );
+
+            if (response.status === 200) {
+                setUpdated(true);
+                alert("Vote updated successfully");
+            } else if (response.status === 404) {
+                alert("Poll not found");
             } else {
-                alert('Unexpected response:'+ response);
+                console.error("Unexpected response: " + JSON.stringify(response));
             }
         } catch (error) {
-            console.error('Error updating vote:', error);
+            console.error("Error: " + error.message);
         }
     };
 
     return (
-        <div>
-            <h2>Update Vote</h2>
-            <form onSubmit={handleVoteUpdate}>
-                {options.map((option, index) => (
-                    <div key={index}>
-                        <label>
-                            <input type="checkbox" checked={selectedOptions.includes(option.id)} onChange={(e) => {
-                                const checked = e.target.checked;
-                                setSelectedOptions((prevSelectedOptions) => {
-                                    if (checked) {
-                                        return [...prevSelectedOptions, option.id];
-                                    } else {
-                                        return prevSelectedOptions.filter((selectedOption) => selectedOption !== option.id);
-                                    }
-                                });
-                            }} />
-                            {option.text}
-                        </label>
-                    </div>
-                ))}
-                <button type="submit">Update Vote</button>
-            </form>
-        </div>
+        <Button
+            variant="warning"
+            disabled={name.length === 0 || selectedChoice.length !== voices || updated}
+            onClick={updateVote}
+        >
+            Update Vote
+        </Button>
     );
 };
 
 UpdateVote.propTypes = {
-    token: PropTypes.string.isRequired,
-    options: PropTypes.array.isRequired,
-    onVoteUpdate: PropTypes.func,
+    editToken: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    selectedChoice: PropTypes.array.isRequired,
+    voices: PropTypes.number.isRequired,
 };
 
 export default UpdateVote;
