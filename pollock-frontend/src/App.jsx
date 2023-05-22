@@ -1,10 +1,10 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import CreatePoll from './components/CreatePoll';
-import ViewPoll from './components/ViewPoll';
+import ViewPoll from './components/trash/ViewPoll.jsx';
 import UpdatePoll from './components/UpdatePoll';
 //import PollList from './components/trash/PollList.jsx';
-import PollResults from './components/PollResults';
+import PollResults from './components/trash/PollResults.jsx';
 //import PollQuestions from './components/trash/PollQuestions.jsx';
 //import PollSettings from './components/trash/PollSettings.jsx';
 import AppNavbar from './components/Navbar';
@@ -12,11 +12,17 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useState } from 'react';
 import axios from "axios";
 import ManagePolls from "./components/ManagePolls";
-import UserPoll from "./components/UserPoll.jsx";
-import EnterToken from "./components/EnterToken.jsx";
+import UserPoll from "./components/trash/UserPoll.jsx";
+import EnterToken from "./components/trash/EnterToken.jsx";
+import VoteForm from "./components/trash/VoteForm.jsx";
+import Landingpage from "./components/LandingPage.jsx";
 
 function App() {
 	const [polls, setPolls] = useState([]);
+	const [options] = useState([]);
+	const [token] = useState("");
+	const [adminToken] = useState("");
+
 
 	const handleDeletePoll = async (adminToken) => {
 		try {
@@ -61,17 +67,18 @@ function App() {
 		<Router>
 			<div className="App">
 				<AppNavbar />
-				<header className="App-header">
+{/*				<header className="App-header">
 					<h1>Poll App</h1>
-				</header>
+				</header>*/}
 				<main>
 					<Routes>
 						<Route path="/create-poll" element={<CreatePoll handleCreatePoll={handleCreatePoll} />} />
 						<Route path="/view-poll/:token" element={<ViewPoll PollResults={PollResults} handleDeletePoll={handleDeletePoll} />} />
-						<Route path="/update-poll/:adminToken" element={<UpdatePoll handleUpdatePoll={handleUpdatePoll} />} />
-						<Route path="/manage-polls/*" element={<ManagePolls handleCreatePoll={handleCreatePoll} handleUpdatePoll={handleUpdatePoll} handleDeletePoll={handleDeletePoll} />} />
-						<Route path="/user-poll/:token" element={<UserPoll />} />
+						<Route path="/update-poll/:adminToken" element={<UpdatePoll adminToken={adminToken} handleUpdatePoll={handleUpdatePoll} />} />
+						<Route path="/manage-polls/*" element={<ManagePolls adminToken={adminToken} handleCreatePoll={handleCreatePoll} handleUpdatePoll={handleUpdatePoll} handleDeletePoll={handleDeletePoll} />} 						/>
 						<Route path="/enter-token" element={<EnterToken />} />
+						<Route path="/vote" element={<VoteForm options={options} token={token} />} />
+						<Route path="/landingpage" element={<Landingpage />} />
 					</Routes>
 				</main>
 			</div>

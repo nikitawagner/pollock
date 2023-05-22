@@ -4,7 +4,7 @@ import CreatePoll from "./CreatePoll.jsx";
 import PropTypes from 'prop-types';
 import {Link, Outlet, useParams} from "react-router-dom";
 
-const ManagePolls = ({ handleUpdatePoll, handleDeletePoll }) => {
+const ManagePolls = ({ handleUpdatePoll, handleDeletePoll, adminToken  }) => {
     const [token, setToken] = useState("");
     const { token: urlToken } = useParams();
 
@@ -36,11 +36,11 @@ const ManagePolls = ({ handleUpdatePoll, handleDeletePoll }) => {
                         {token && (
                             <>
                                 <Link to={`${token}/update`}>
-                                    <Button variant="primary" className="mr-2" onClick={() => handleUpdatePoll(token)}>
+                                    <Button variant="primary" className="mr-2" onClick={() => handleUpdatePoll(token, adminToken)}>
                                         Update Poll
                                     </Button>
                                 </Link>
-                                <Button variant="danger" onClick={() => handleDeletePoll(token)}>
+                                <Button variant="danger" onClick={() => handleDeletePoll(token, adminToken)}>
                                     Delete Poll
                                 </Button>
                             </>
@@ -56,6 +56,7 @@ const ManagePolls = ({ handleUpdatePoll, handleDeletePoll }) => {
 ManagePolls.propTypes = {
     handleUpdatePoll: PropTypes.func.isRequired,
     handleDeletePoll: PropTypes.func.isRequired,
+    adminToken: PropTypes.string.isRequired,
 };
 
 export default ManagePolls;
