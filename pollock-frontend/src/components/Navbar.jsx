@@ -18,8 +18,18 @@ const AppNavbar = () => {
                         </Link>
                     </Nav.Item>
                     <Nav.Item>
+                        <Link to="/vote" className="nav-link">
+                            Vote
+                        </Link>
+                    </Nav.Item>
+                    <Nav.Item>
                         <Link to="/enter-token" className="nav-link">
                             User Poll
+                        </Link>
+                    </Nav.Item>
+                    <Nav.Item>
+                        <Link to="/landingpage" className="nav-link">
+                            LandingPage
                         </Link>
                     </Nav.Item>
                 </Nav>

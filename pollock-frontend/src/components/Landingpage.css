@@ -1,0 +1,37 @@
+.poll-form {
+    margin: 20px;
+}
+
+.poll-form h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.poll-form h5 {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.poll-form .options {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.poll-form .option {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+
+.poll-form .option label {
+    margin-left: 5px;
+}
+
+.poll-form .option:last-child {
+    margin-right: 0;
+}
+
+.poll-form button {
+    margin-top: 20px;
+}
