@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import ViewPoll from './ViewPoll';
-import PollResults from './PollResults';
-import Vote from './Vote';
+import ViewPoll from './ViewPoll.jsx';
+import PollResults from './PollResults.jsx';
+import Vote from './Vote.jsx';
 
 const TakePoll = () => {
     const { token } = useParams();
@@ -14,7 +14,7 @@ const TakePoll = () => {
 
     const fetchPoll = async () => {
         try {
-            const response = await axios.get(`http://localhost:49706/vote/lack/${token}`);
+            const response = await axios.post(`http://localhost:49706/vote/lack/${token}`);
             const { poll, vote } = response.data;
             setPoll(poll.body);
             setOptions(poll.body.options);
