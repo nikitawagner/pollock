@@ -5,7 +5,6 @@ import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 
-
 const CreatePoll = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -21,9 +20,9 @@ const CreatePoll = () => {
         event.preventDefault();
 
         const pollData = {
-            title,
-            description,
-            options: options.map((option) => ({ text: option })),
+            title: title,
+            description: description,
+            options: options.map((option, index) => ({ id: index, text: option })),
             setting: { voices, worst, deadline: new Date(deadline) },
             fixed: fixed.map(optionIndex => ({ text: options[optionIndex] })),
         };
@@ -58,7 +57,7 @@ const CreatePoll = () => {
             await navigator.clipboard.writeText(token);
             alert('Kopieren erfolgreich');
         } catch (error) {
-            console.error('Failed to copy text: ', error);
+            console.error('Kopieren nicht erfolgreich: ', error);
         }
     };
 
