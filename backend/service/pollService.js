@@ -132,10 +132,7 @@ export const getPollLack = async (req, res, next) => {
 				voices: pollBodyResponse.poll_settings[0].voices,
 				worst: pollBodyResponse.poll_settings[0].worst ? true : false,
 				deadline: pollBodyResponse.poll_settings[0].deadline
-					? pollBodyResponse.poll_settings[0].deadline.substring(
-							0,
-							pollBodyResponse.poll_settings[0].deadline().length - 1
-					  )
+					? pollBodyResponse.poll_settings[0].deadline
 					: null,
 			};
 			const formattedArray = [];

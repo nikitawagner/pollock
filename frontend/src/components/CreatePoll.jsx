@@ -21,7 +21,7 @@ const CreatePoll = () => {
 	};
 	const handleChangeOption = (value, index) => {
 		const element = {
-			id: 0,
+			id: index + 1,
 			text: value,
 		};
 		const newArray = [...options];
@@ -62,34 +62,38 @@ const CreatePoll = () => {
 
 	return (
 		<>
-			<h1 className="m-3 text-center">UMFRAGE ERSTELLEN</h1>
+			<h1 className="m-3 mb-5 text-center">UMFRAGE ERSTELLEN</h1>
 			<h3 className="text-center text-danger">{error}</h3>
 			{adminToken.length === 0 ? (
 				<>
-					<InputGroup className="mb-3">
-						<InputGroup.Text id="inputGroup-sizing-default">
-							Titel
-						</InputGroup.Text>
-						<Form.Control
-							aria-label="title"
-							aria-describedby="inputGroup-sizing-default"
-							value={title}
-							onChange={() => setTitle(event.target.value)}
-						/>
-						<InputGroup.Text id="inputGroup-sizing-default">
-							Beschreibung
-						</InputGroup.Text>
-						<Form.Control
-							aria-label="title"
-							aria-describedby="inputGroup-sizing-default"
-							value={description}
-							onChange={() => setDescription(event.target.value)}
-						/>
-					</InputGroup>
-					<InputGroup className="mb-3">
+					<div className="overall">
+						<div className="overall-input">
+							<InputGroup.Text id="inputGroup-sizing-default">
+								Titel
+							</InputGroup.Text>
+							<Form.Control
+								aria-label="title"
+								aria-describedby="inputGroup-sizing-default"
+								value={title}
+								onChange={() => setTitle(event.target.value)}
+							/>
+						</div>
+						<div className="overall-input">
+							<InputGroup.Text id="inputGroup-sizing-default">
+								Beschreibung
+							</InputGroup.Text>
+							<Form.Control
+								aria-label="title"
+								aria-describedby="inputGroup-sizing-default"
+								value={description}
+								onChange={() => setDescription(event.target.value)}
+							/>
+						</div>
+					</div>
+					<div className="options">
 						{options.map((option, index) => {
 							return (
-								<div className="m-1">
+								<div className="m-1" key={index}>
 									<InputGroup.Text id="inputGroup-sizing-default">
 										Option {index + 1}
 									</InputGroup.Text>
@@ -112,64 +116,55 @@ const CreatePoll = () => {
 								</div>
 							);
 						})}
-					</InputGroup>
-					<Button variant="secondary" onClick={addOption}>
+					</div>
+					<Button variant="secondary" onClick={addOption} className="w-100">
 						Option hinzufügen
 					</Button>
 					<hr />
-					<InputGroup className="mb-3">
-						<div>
-							<div className="worst-input">
-								<div>Worst</div>
-								<Form.Check
-									type="checkbox"
-									className="m-3"
-									id="worst-select"
-									checked={worst}
-									onChange={() => setWorst(event.target.checked)}
-								/>
-							</div>
-							<div className="worst-input">
-								<div>Anzahl Stimmen</div>
-								<Form.Control
-									type="number"
-									min={1}
-									className="m-3"
-									id="voices-select"
-									value={voices}
-									onChange={() => setVoices(event.target.value)}
-								/>
-							</div>
-							<div className="worst-input">
-								<div>Deadline</div>
-								<Form.Control
-									type="date"
-									className="m-3"
-									id="date-select"
-									value={date}
-									onChange={() => setDate(event.target.value)}
-								/>
-								<Form.Control
-									type="time"
-									className="m-3"
-									id="time-select"
-									value={time}
-									onChange={() => setTime(event.target.value)}
-								/>
-							</div>
+					<div className="overall">
+						<div className="worst-input">
+							<div>Worst</div>
+							<Form.Check
+								type="checkbox"
+								className="m-3"
+								id="worst-select"
+								checked={worst}
+								onChange={() => setWorst(event.target.checked)}
+							/>
 						</div>
-					</InputGroup>
+						<div className="worst-input">
+							<div>Anzahl Stimmen</div>
+							<Form.Control
+								type="number"
+								min={1}
+								className="m-3"
+								id="voices-select"
+								value={voices}
+								onChange={() => setVoices(event.target.value)}
+							/>
+						</div>
+						<div className="worst-input">
+							<div>Deadline</div>
+							<Form.Control
+								type="date"
+								className="m-3"
+								id="date-select"
+								value={date}
+								onChange={() => setDate(event.target.value)}
+							/>
+							<Form.Control
+								type="time"
+								className="m-3"
+								id="time-select"
+								value={time}
+								onChange={() => setTime(event.target.value)}
+							/>
+						</div>
+					</div>
 					<hr />
 					<Button
 						variant="success"
-						disabled={
-							title.length > 1 &&
-							options.length > 1 &&
-							date.length > 1 &&
-							time.length > 1
-								? false
-								: true
-						}
+						disabled={title.length > 1 && options.length > 1 ? false : true}
 						onClick={handleCreatePoll}
 					>
 						Umfrage erstellen
@@ -177,9 +172,10 @@ const CreatePoll = () => {
 				</>
 			) : (
 				<>
-					<div>Admin Token: {adminToken}</div>
-					<div>Share Token: {shareToken}</div>
+					<div className="token-reveal">Admin Token: {adminToken}</div>
+					<div className="token-reveal">Share Token: {shareToken}</div>
 					<Button
+						className="w-100"
 						variant="success"
 						onClick={() => {
 							setAdminToken("");

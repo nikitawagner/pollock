@@ -17,6 +17,7 @@ const EditPoll = () => {
 	const [date, setDate] = useState("");
 	const [time, setTime] = useState("");
 	const [error, setError] = useState("");
+	const [fixed, setFixed] = useState([0]);
 
 	const handleChangeOption = (value, index) => {
 		const element = {
@@ -44,6 +45,8 @@ const EditPoll = () => {
 			setOptions(data.poll.body.options);
 			setWorst(data.poll.body.setting.worst);
 			setVoices(data.poll.body.setting.voices);
+			setFixed(data.poll.body.fixed);
+			console.log(poll);
 		} catch (error) {
 			setPoll(null);
 		}
@@ -60,9 +63,9 @@ const EditPoll = () => {
 					time && date ? new Date(`${date}T${time}Z`).toISOString() : null,
 				voices: Number(voices),
 			},
-			fixed: [0],
+			fixed: fixed,
 		};
-		console.log(body);
+		setPoll(null);
 		try {
 			const response = await API.put(`poll/lack/${adminToken}`, body);
 			setError("");
@@ -80,10 +83,20 @@ const EditPoll = () => {
 			setError("Keine Rechte :(");
 		}
 	};
+
+	const handleClickFixed = async (index) => {
+		if (fixed.includes(index)) {
+			setFixed(fixed.filter((c) => c !== index));
+		} else {
+			const editedArray = [...fixed];
+			editedArray.push(index);
+			setFixed(editedArray);
+		}
+	};
 	return (
 		<>
 			<h1 className="m-3 text-center">UMFRAGE BEARBEITEN</h1>
-			<InputGroup className="mb-3">
+			<InputGroup>
 				<InputGroup.Text id="inputGroup-sizing-default">
 					Admin Token
 				</InputGroup.Text>
@@ -105,32 +118,44 @@ const EditPoll = () => {
 
 			<h3 className="text-center text-danger">{error}</h3>
 
-			{!poll ? null : (
+			{!poll ? null : poll.poll.body.fixed.length > 1 ? (
+				<div>
+					<h1>Umfrage abgeschlossen</h1>
+					<Statistics token={adminToken} />
+					<Button variant="danger" onClick={handleDelete}>
+						LOESCHEN
+					</Button>
+				</div>
+			) : (
 				<>
-					<InputGroup className="mb-3">
-						<InputGroup.Text id="inputGroup-sizing-default">
-							Titel
-						</InputGroup.Text>
-						<Form.Control
-							aria-label="title"
-							aria-describedby="inputGroup-sizing-default"
-							value={title}
-							onChange={() => setTitle(event.target.value)}
-						/>
-						<InputGroup.Text id="inputGroup-sizing-default">
-							Beschreibung
-						</InputGroup.Text>
-						<Form.Control
-							aria-label="title"
-							aria-describedby="inputGroup-sizing-default"
-							value={description}
-							onChange={() => setDescription(event.target.value)}
-						/>
-					</InputGroup>
-					<InputGroup className="mb-3">
+					<div className="overall">
+						<div className="overall-input">
+							<InputGroup.Text id="inputGroup-sizing-default">
+								Titel
+							</InputGroup.Text>
+							<Form.Control
+								aria-label="title"
+								aria-describedby="inputGroup-sizing-default"
+								value={title}
+								onChange={() => setTitle(event.target.value)}
+							/>
+						</div>
+						<div className="overall-input">
+							<InputGroup.Text id="inputGroup-sizing-default">
+								Beschreibung
+							</InputGroup.Text>
+							<Form.Control
+								aria-label="title"
+								aria-describedby="inputGroup-sizing-default"
+								value={description}
+								onChange={() => setDescription(event.target.value)}
+							/>
+						</div>
+					</div>
+					<div className="options">
 						{options.map((option, index) => {
 							return (
-								<div className="m-1">
+								<div className="m-1" key={index}>
 									<InputGroup.Text id="inputGroup-sizing-default">
 										Option {index + 1}
 									</InputGroup.Text>
@@ -143,72 +168,71 @@ const EditPoll = () => {
 										}
 									/>
 
-									{index > 1 && index + 1 === options.length ? (
-										<Button
-											variant="danger"
-											onClick={() => deleteOption(index)}
-										>
-											Entfernen
-										</Button>
-									) : null}
+									<Button
+										variant={
+											fixed.includes(index + 1) ? "secondary" : "success"
+										}
+										onClick={() => handleClickFixed(index + 1)}
+									>
+										{fixed.includes(index + 1) ? "Unfix" : "Fix"}
+									</Button>
 								</div>
 							);
 						})}
-					</InputGroup>
+					</div>
 					<hr />
-					<InputGroup className="mb-3">
-						<div>
-							<div className="worst-input">
-								<div>Worst</div>
-								<Form.Check
-									type="checkbox"
-									className="m-3"
-									id="worst-select"
-									checked={worst}
-									onChange={() => setWorst(event.target.checked)}
-								/>
-							</div>
-							<div className="worst-input">
-								<div>Anzahl Stimmen</div>
-								<Form.Control
-									type="number"
-									min={1}
-									className="m-3"
-									id="voices-select"
-									value={voices}
-									onChange={() => setVoices(event.target.value)}
-								/>
-							</div>
-							<div className="worst-input">
-								<div>Deadline</div>
-								<Form.Control
-									type="date"
-									className="m-3"
-									id="date-select"
-									value={date}
-									onChange={() => setDate(event.target.value)}
-								/>
-								<Form.Control
-									type="time"
-									className="m-3"
-									id="time-select"
-									value={time}
-									onChange={() => setTime(event.target.value)}
-								/>
-							</div>
+					<div className="overall">
+						<div className="worst-input">
+							<div>Worst</div>
+							<Form.Check
+								type="checkbox"
+								className="m-3"
+								id="worst-select"
+								checked={worst}
+								onChange={() => setWorst(event.target.checked)}
+							/>
 						</div>
-					</InputGroup>
-					<Statistics token={adminToken} />
+						<div className="worst-input">
+							<div>Anzahl Stimmen</div>
+							<Form.Control
+								type="number"
+								min={1}
+								className="m-3"
+								id="voices-select"
+								value={voices}
+								onChange={() => setVoices(event.target.value)}
+							/>
+						</div>
+						<div className="worst-input">
+							<div>Deadline</div>
+							<Form.Control
+								type="date"
+								className="m-3"
+								id="date-select"
+								value={date}
+								onChange={() => setDate(event.target.value)}
+							/>
+							<Form.Control
+								type="time"
+								className="m-3"
+								id="time-select"
+								value={time}
+								onChange={() => setTime(event.target.value)}
+							/>
+						</div>
+					</div>
+					<Button variant="danger" onClick={handleDelete} className="w-100">
+						LOESCHEN
+					</Button>
 					<Button
 						variant="success"
+						className="w-100"
 						onClick={handleEdit}
 						disabled={title.length > 1 && options.length > 1 ? false : true}
 					>
 						Bearbeiten
 					</Button>
-					<Button variant="danger" onClick={handleDelete}>
-						LOESCHEN
-					</Button>
+					<Statistics token={adminToken} />
 				</>
 			)}
 		</>
