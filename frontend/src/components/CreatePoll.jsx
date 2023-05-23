@@ -98,6 +98,7 @@ const CreatePoll = () => {
 										Option {index + 1}
 									</InputGroup.Text>
 									<Form.Control
+										className="option-input"
 										aria-label="title"
 										aria-describedby="inputGroup-sizing-default"
 										onChange={() =>
@@ -105,8 +106,9 @@ const CreatePoll = () => {
 										}
 									/>
 
-									{index > 1 && index + 1 === options.length ? (
+									{options.length > 1 ? (
 										<Button
+											className="option-button"
 											variant="danger"
 											onClick={() => deleteOption(index)}
 										>

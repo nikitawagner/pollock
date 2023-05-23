@@ -155,27 +155,35 @@ const EditPoll = () => {
 					<div className="options">
 						{options.map((option, index) => {
 							return (
-								<div className="m-1" key={index}>
+								<div className="option-container" key={index}>
 									<InputGroup.Text id="inputGroup-sizing-default">
 										Option {index + 1}
 									</InputGroup.Text>
 									<Form.Control
+										className="option-input"
 										aria-label="title"
 										aria-describedby="inputGroup-sizing-default"
 										value={option.text}
-										onChange={() =>
-											handleChangeOption(event.target.value, index)
-										}
+										onChange={() => handleChangeOption(event.target.value, index)}
 									/>
-
-									<Button
-										variant={
-											fixed.includes(index + 1) ? "secondary" : "success"
-										}
-										onClick={() => handleClickFixed(index + 1)}
-									>
-										{fixed.includes(index + 1) ? "Unfix" : "Fix"}
-									</Button>
+									<div className="option-buttons">
+										<Button
+											className="option-button"
+											variant={fixed.includes(index + 1) ? "secondary" : "success"}
+											onClick={() => handleClickFixed(index + 1)}
+										>
+											{fixed.includes(index + 1) ? "Unfix" : "Fix"}
+										</Button>
+										{options.length > 1 ? (
+											<Button
+												className="option-button"
+												variant="danger"
+												onClick={() => deleteOption(index)}
+											>
+												Entfernen
+											</Button>
+										) : null}
+									</div>
 								</div>
 							);
 						})}

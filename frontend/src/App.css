@@ -49,3 +49,8 @@
 	color: white;
 	text-align: center;
 }
+.option-input,
+.option-button {
+	width: 100%;
+	flex: 1;
+}
