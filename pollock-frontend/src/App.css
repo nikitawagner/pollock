@@ -63,3 +63,11 @@ button {
   max-width: 800px;
   margin: 0 auto;
 }
+#root .btn-copy, .btn-delete {
+  margin: 0 !important;
+  align-self: center;
+}
+.input-label {
+  width: 110px;
+  text-align: left;
+}

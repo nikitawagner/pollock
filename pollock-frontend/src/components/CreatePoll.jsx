@@ -52,6 +52,12 @@ const CreatePoll = () => {
         setOptions(newOptions);
     };
 
+    const deleteOption = (index) => {
+        const newOptions = [...options];
+        newOptions.splice(index, 1);
+        setOptions(newOptions);
+    };
+
     const handleCopyToClipboard = async (token) => {
         try {
             await navigator.clipboard.writeText(token);
@@ -83,27 +89,35 @@ const CreatePoll = () => {
                 handleSubmit={handleSubmit}
                 addOption={addOption}
                 updateOption={updateOption}
+                deleteOption={deleteOption}
             />
             {adminToken && (
-                <InputGroup className="mb-3">
-                    <InputGroup.Text id="basic-addon1">Admin Token</InputGroup.Text>
+                <InputGroup className="mb-3 w-100">
+                    <InputGroup.Text id="basic-addon1" className="input-label">Admin Token</InputGroup.Text>
                     <FormControl
                         readOnly
                         value={adminToken}
                     />
-                    <Button variant="outline-secondary" onClick={() => handleCopyToClipboard(adminToken)}>Copy</Button>
+                    <div style={{ display: 'flex', alignItems: 'center', margin: '-5px 0' }}>
+                        <Button className="btn-copy" variant="outline-secondary" onClick={() => handleCopyToClipboard(adminToken)}>Copy</Button>
+                    </div>
                 </InputGroup>
             )}
+
             {shareToken && (
-                <InputGroup className="mb-3">
-                    <InputGroup.Text id="basic-addon2">Share Token</InputGroup.Text>
+                <InputGroup className="mb-3 w-100">
+                    <InputGroup.Text id="basic-addon2" className="input-label">Share Token</InputGroup.Text>
                     <FormControl
                         readOnly
                         value={shareToken}
                     />
-                    <Button variant="outline-secondary" onClick={() => handleCopyToClipboard(shareToken)}>Copy</Button>
+                    <div style={{ display: 'flex', alignItems: 'center', margin: '-5px 0' }}>
+                        <Button className="btn-copy" variant="outline-secondary" onClick={() => handleCopyToClipboard(shareToken)}>Copy</Button>
+                    </div>
                 </InputGroup>
             )}
+
+
 
         </>
     );

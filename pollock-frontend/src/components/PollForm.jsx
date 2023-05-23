@@ -18,6 +18,7 @@ const PollForm = ({
                       handleSubmit,
                       addOption,
                       updateOption,
+                      deleteOption,
                   }) => {
 
     console.log(options); //todo: remove
@@ -67,6 +68,7 @@ const PollForm = ({
                                 onChange={(e) => handleFixOptionChange(index, e)}
                             />
                             <InputGroup.Text>Fix Option</InputGroup.Text>
+                            <Button className="btn-delete" variant="outline-danger" style={{ height: '38px' }} onClick={() => deleteOption(index)}>Delete</Button>
                         </InputGroup>
                     ))}
                     <Button variant="outline-secondary" type="button" onClick={addOption}>
@@ -101,7 +103,7 @@ const PollForm = ({
                     />
                 </Form.Group>
 
-                <Button type="submit">Create Poll</Button>
+                <Button type="submit" style={{ margin: '20px' }}>Create Poll</Button>
             </Form>
         </Container>
     );
@@ -128,6 +130,7 @@ PollForm.propTypes = {
     handleSubmit: PropTypes.func.isRequired,
     addOption: PropTypes.func.isRequired,
     updateOption: PropTypes.func.isRequired,
+    deleteOption: PropTypes.func.isRequired,
 };
 
 export default PollForm;
