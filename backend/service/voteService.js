@@ -246,6 +246,7 @@ export const putVoteLack = async (req, res, next) => {
 		const token = req.params.token;
 		const name = req.body.owner.name;
 		const choices = req.body.choice;
+		console.log(choices);
 		const tokenResponse = await dbConnection.tokens.findFirst({
 			where: {
 				value: token,
@@ -286,12 +287,22 @@ export const putVoteLack = async (req, res, next) => {
 					vote_id_fk: voteId,
 				},
 			});
+
 			await Promise.all(
 				choices.map(async (choice) => {
+					const pollOptionsResponse = await dbConnection.poll_options.findMany({
+						where: {
+							AND: {
+								poll_id_fk: tokenResponse.poll_fk,
+								given_id: choice.id,
+							},
+						},
+					});
+					console.log(pollOptionsResponse);
 					await dbConnection.vote_choice.create({
 						data: {
 							vote_id_fk: voteId,
-							poll_option_id_fk: choice.id,
+							poll_option_id_fk: pollOptionsResponse[0].id,
 							worst: choice.worst ? 1 : 0,
 						},
 					});

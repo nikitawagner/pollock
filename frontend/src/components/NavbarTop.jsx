@@ -30,6 +30,27 @@ const NavbarTop = () => {
 					>
 						UMFRAGE BEARBEITEN
 					</Nav.Link>
+					<Nav.Link
+						onClick={() => {
+							navigate("/vote");
+						}}
+					>
+						UMFRAGE TEILNEHMEN
+					</Nav.Link>
+					<Nav.Link
+						onClick={() => {
+							navigate("/vote/edit");
+						}}
+					>
+						TEILNAHME BEARBEITEN
+					</Nav.Link>
+					<Nav.Link
+						onClick={() => {
+							navigate("/result");
+						}}
+					>
+						UMFRAGE ERGEBNIS
+					</Nav.Link>
 				</Nav>
 			</Container>
 		</Navbar>

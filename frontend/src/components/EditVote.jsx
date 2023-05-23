@@ -5,7 +5,7 @@ import Button from "react-bootstrap/Button";
 import API from "../API";
 import Statistics from "./Statistics";
 
-const Landingpage = () => {
+const EditVote = () => {
 	const [token, setToken] = useState("");
 	const [poll, setPoll] = useState(null);
 	const [title, setTitle] = useState("");
@@ -14,21 +14,28 @@ const Landingpage = () => {
 	const [voices, setVoices] = useState(1);
 	const [selectedChoice, setSelectedChoice] = useState([]);
 	const [name, setName] = useState("");
-	const [worst, setWorst] = useState(false);
 	const [success, setSuccess] = useState(false);
 	const [editToken, setEditToken] = useState("");
+	const [worst, setWorst] = useState(false);
+	const [votedName, setVotedName] = useState("");
+	const [votedChoices, setVotedChoices] = useState([]);
 	const [worstArray, setWorstArray] = useState([]);
 
 	const getPoll = async (token) => {
 		try {
-			const { data } = await API.get(`poll/lack/${token}`);
+			console.log(123);
+			const { data } = await API.get(`vote/lack/${token}`);
 			setPoll(data);
 			setTitle(data.poll.body.title);
 			setDescription(data.poll.body.description);
 			setOptions(data.poll.body.options);
 			setWorst(data.poll.body.setting.worst);
 			setVoices(data.poll.body.setting.voices);
-		} catch (error) {}
+			setSelectedChoice(data.vote.choice);
+			setName(data.vote.owner.name);
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	const handleChangeChoice = (value, option) => {
@@ -43,7 +50,6 @@ const Landingpage = () => {
 			);
 			setSelectedChoice(editedArray);
 		}
-		console.log(selectedChoice);
 	};
 
 	const handleChangeWorst = (value, option) => {
@@ -73,11 +79,9 @@ const Landingpage = () => {
 				},
 				choice: formatedArray,
 			};
-
 			console.log(body);
-
-			const { data } = await API.post(`/vote/lack/${token}`, body);
-			setEditToken(data.edit.value);
+			const { data } = await API.put(`/vote/lack/${token}`, body);
+			console.log(data);
 			setSuccess(true);
 		} catch (error) {
 			console.log(error);
@@ -85,14 +89,18 @@ const Landingpage = () => {
 		}
 	};
 
+	const handleDelete = async () => {
+		await API.delete(`/vote/lack/${token}`);
+		setPoll(null);
+	};
+
 	return (
 		<>
-			<h1 className="m-3 text-center">TEILNEHMEN</h1>
-
+			<h1 className="m-3 text-center">VOTE BEARBEITEN</h1>
 			{!poll ? (
 				<InputGroup className="mb-3">
 					<InputGroup.Text id="inputGroup-sizing-default">
-						Token
+						Edit Token
 					</InputGroup.Text>
 					<Form.Control
 						aria-label="admin-tooken"
@@ -112,20 +120,18 @@ const Landingpage = () => {
 			) : poll.poll.body.fixed.length > 1 ? (
 				<div>
 					<h1>Umfrage abgeschlossen</h1>
-					<Statistics token={token} />
 				</div>
 			) : success ? (
 				<>
-					<div className="token-reveal">Edit Token: {editToken}</div>
 					<Statistics token={token} />
 				</>
 			) : (
 				<>
-					<h1>Titel: {title}</h1>
-					<h5>Beschreibung: {description.length === 0 ? "/" : description}</h5>
-					{/* {selectedChoice.map((choice) => {
+					<h1>{title}</h1>
+					<h5>{description}</h5>
+					{selectedChoice.map((choice) => {
 						return <div>{choice.text}</div>;
-					})} */}
+					})}
 					<InputGroup className="mb-3">
 						<InputGroup.Text id="inputGroup-sizing-default">
 							Dein Name
@@ -138,6 +144,7 @@ const Landingpage = () => {
 						/>
 					</InputGroup>
 					<div>Anzahl Stimmen: {voices}</div>
+
 					{options.map((option) => {
 						return (
 							<div className="worst-select">
@@ -146,10 +153,7 @@ const Landingpage = () => {
 										type="checkbox"
 										className="m-3"
 										id="worst-select"
-										disabled={
-											worstArray.filter((choice) => choice.id === option.id)
-												.length > 0
-										}
+										checked={selectedChoice.find((c) => c.id === option.id)}
 										onChange={() =>
 											handleChangeChoice(event.target.checked, option)
 										}
@@ -186,10 +190,12 @@ const Landingpage = () => {
 								? false
 								: true
 						}
-						className="w-100"
 						onClick={handleSubmit}
 					>
 						Abstimmen
+					</Button>
+					<Button variant="danger" onClick={handleDelete}>
+						LOESCHEN
 					</Button>
 				</>
 			)}
@@ -197,4 +203,4 @@ const Landingpage = () => {
 	);
 };
 
-export default Landingpage;
+export default EditVote;
