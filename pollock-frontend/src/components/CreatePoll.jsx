@@ -23,7 +23,10 @@ const CreatePoll = () => {
             title: title,
             description: description,
             options: options.map((option, index) => ({ id: index, text: option })),
-            setting: { voices, worst, deadline: new Date(deadline) },
+            setting: {
+                voices: voices,
+                worst: worst,
+                deadline: new Date(deadline) },
             fixed: fixed.map(optionIndex => ({ text: options[optionIndex] })),
         };
 
@@ -71,6 +74,7 @@ const CreatePoll = () => {
 
     return (
         <>
+            <h1 className="m-3 mb-5 text-center">UMFRAGE ERSTELLEN</h1>
             <PollForm
                 title={title}
                 setTitle={setTitle}
@@ -116,9 +120,6 @@ const CreatePoll = () => {
                     </div>
                 </InputGroup>
             )}
-
-
-
         </>
     );
 };

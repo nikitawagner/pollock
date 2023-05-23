@@ -19,6 +19,8 @@ const Landingpage = () => {
     const [description, setDescription] = useState("");
     const [voices, setVoices] = useState(0);
     const [options, setOptions] = useState([]);
+    const [triggerUpdate, setTriggerUpdate] = useState(false);
+
 
     const getPoll = async (token) => {
         try {
@@ -32,6 +34,7 @@ const Landingpage = () => {
                 setDescription(pollData.description);
                 setVoices(pollData.setting.voices);
                 setOptions(pollData.options);
+                setTriggerUpdate(prev => !prev);
             } else {
                 console.error("Unexpected response: " + JSON.stringify(response));
             }
@@ -48,7 +51,7 @@ const Landingpage = () => {
             ]);
         } else {
             setSelectedChoice((prevState) =>
-                prevState.filter((choice) => choice.id !== option.id)
+                prevState.filter((choice) => choice.id != option.id)
             );
         }
     };
@@ -128,7 +131,7 @@ const Landingpage = () => {
                             voices={voices}
                         />
                     )}
-                    <Statistics token={token} />
+                    <Statistics token={token} triggerUpdate={triggerUpdate} />
                 </>
             ) : (
                 <div className="poll-form">
