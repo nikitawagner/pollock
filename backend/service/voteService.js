@@ -24,16 +24,18 @@ export const postVoteLack = async (req, res, next) => {
 			if (tokenResponse) {
 				const pollId = tokenResponse.poll_fk;
 
-				const { id } = await dbConnection.users.create({
-					data: {
-						name: owner,
-					},
-					select: { id: true },
-				});
+				let user = await dbConnection.users.findFirst({ where: { name: owner } });
+				if (!user) {
+					user = await dbConnection.users.create({
+						data: { name: owner },
+						select: { id: true },
+					});
+				}
+
 				await dbConnection.user_poll.create({
 					data: {
 						polls_id_fk: pollId,
-						users_id_fk: id,
+						users_id_fk: user.id,
 					},
 				});
 				const tokenValue = v4();
@@ -53,7 +55,7 @@ export const postVoteLack = async (req, res, next) => {
 							.slice(0, 19)
 							.replace("T", " "),
 						edit_token_id_fk: tokenId.id,
-						user_id_fk: id,
+						user_id_fk: user.id,
 					},
 				});
 
@@ -73,13 +75,25 @@ export const postVoteLack = async (req, res, next) => {
 								},
 							},
 						});
-						await dbConnection.vote_choice.create({
-							data: {
-								poll_option_id_fk: optionId[0].id,
-								vote_id_fk: voteId,
-								worst: choice.worst ? 1 : 0,
+						const existingVoteChoice = await dbConnection.vote_choice.findFirst({
+							where: {
+								AND: {
+									vote_id_fk: voteId,
+									poll_option_id_fk: optionId[0].id,
+								},
 							},
 						});
+						if (!existingVoteChoice) {
+							await dbConnection.vote_choice.create({
+								data: {
+									poll_option_id_fk: optionId[0].id,
+									vote_id_fk: voteId,
+									worst: choice.worst ? 1 : 0,
+								},
+							});
+						} else {
+							console.log(`VoteChoice with vote_id_fk: ${voteId} and poll_option_id_fk: ${optionId[0].id} already exists.`);
+						}
 					})
 				);
 				console.log(tokenValue);
