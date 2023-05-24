@@ -79,3 +79,17 @@ button {
 .inputGroupText {
 	width: 120px;
 }
+.option-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.option-checkbox, .worst-checkbox {
+	display: flex;
+	align-items: center;
+}
+
+.option-text {
+	text-align: center;
+}

@@ -157,10 +157,10 @@ const Landingpage = () => {
 						/>
 					</InputGroup>
 					<div>Anzahl Stimmen: {voices}</div>
-					{options.map((option) => {
+					{options.sort((a, b) => a.id - b.id).map((option) => {
 						return (
-							<div className="worst-select">
-								<div className="worst-input" key={option.id}>
+							<div className="option-row">
+								<div className="option-checkbox">
 									<Form.Check
 										type="checkbox"
 										className="m-3"
@@ -173,9 +173,9 @@ const Landingpage = () => {
 											handleChangeChoice(event.target.checked, option)
 										}
 									/>
-									<div>{option.text}</div>
 								</div>
-								<div className="worst-input" key={option.id + "worst"}>
+								<div className="option-text">{option.text}</div>
+								<div className="worst-checkbox">
 									<Form.Check
 										type="checkbox"
 										className="m-3"
@@ -194,6 +194,8 @@ const Landingpage = () => {
 							</div>
 						);
 					})}
+
+
 					<Button
 						variant="success"
 						disabled={
