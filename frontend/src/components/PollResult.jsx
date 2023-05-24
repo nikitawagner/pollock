@@ -10,18 +10,30 @@ const PollResult = () => {
 	const [poll, setPoll] = useState(null);
 	const [settToken, setSettToken] = useState("");
 	const [fixedTexts, setFixedTexts] = useState([]);
+	const compareById = (a, b) => {
+		if (a.id < b.id) {
+			return -1;
+		}
+		if (a.id > b.id) {
+			return 1;
+		}
+		return 0;
+	};
 	const getPoll = async (token) => {
 		try {
 			const { data } = await API.get(`poll/lack/${token}`);
 			setPoll(data);
 			setSettToken(token);
 			console.log(data);
+			const sortedArray = data.poll.body.options.sort(compareById);
+			console.log(sortedArray);
 			const fixedArray = [];
-			data.poll.body.options.map((option) => {
+			sortedArray.map((option) => {
 				if (data.poll.body.fixed.includes(option.id)) {
 					fixedArray.push(option.text);
 				}
 			});
+			console.log(fixedArray);
 			setFixedTexts(fixedArray);
 		} catch (error) {
 			console.log(error);

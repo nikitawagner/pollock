@@ -142,6 +142,18 @@ export const getPollLack = async (req, res, next) => {
 					text: option.text,
 				});
 			});
+
+			const compareById = (a, b) => {
+				if (a.id < b.id) {
+					return -1;
+				}
+				if (a.id > b.id) {
+					return 1;
+				}
+				return 0;
+			};
+
+			const sortedArray = formattedArray.sort(compareById);
 			const shareToken = await dbConnection.tokens.findMany({
 				where: {
 					AND: {
@@ -157,7 +169,7 @@ export const getPollLack = async (req, res, next) => {
 			const pollBody = {
 				title: pollBodyResponse.title,
 				description: pollBodyResponse.description,
-				options: formattedArray,
+				options: sortedArray,
 				setting: setting,
 				fixed: JSON.parse(pollBodyResponse.fixed),
 			};
@@ -177,11 +189,23 @@ export const getPollLack = async (req, res, next) => {
 				participantArray.push({ name: participant.users.name });
 				participentIdArray.push(participant.users.id);
 			});
-			const pollOptions = await dbConnection.poll_options.findMany({
+
+			const compareByGivenId = (a, b) => {
+				if (a.given_id < b.given_id) {
+					return -1;
+				}
+				if (a.given_id > b.given_id) {
+					return 1;
+				}
+				return 0;
+			};
+			const pollOptionsResponse = await dbConnection.poll_options.findMany({
 				where: {
 					poll_id_fk: poll_fk,
 				},
 			});
+
+			const pollOptions = pollOptionsResponse.sort(compareByGivenId);
 			const votesChoice = await dbConnection.vote_choice.findMany({
 				where: {
 					poll_option_id_fk: {
@@ -276,11 +300,55 @@ export const putPollLack = async (req, res, next) => {
 				},
 			});
 
-			const oldOptions = await dbConnection.poll_options.findMany({
+			const oldOptionsRespose = await dbConnection.poll_options.findMany({
 				where: {
 					poll_id_fk: pollId,
 				},
 			});
+			const compareByGivenId = (a, b) => {
+				if (a.given_id < b.given_id) {
+					return -1;
+				}
+				if (a.given_id > b.given_id) {
+					return 1;
+				}
+				return 0;
+			};
+			const oldOptions = oldOptionsRespose.sort(compareByGivenId);
+
+			const lenNewOptions = options.length;
+			const lenOldOptions = oldOptions.length;
+			console.log("new:" + lenNewOptions);
+			console.log("old: " + lenOldOptions);
+
+			if (lenNewOptions > lenOldOptions) {
+				const newOptionsArray = options.splice(lenOldOptions);
+				console.log(newOptionsArray);
+				await Promise.all(
+					newOptionsArray.map(async (option) => {
+						await dbConnection.poll_options.create({
+							data: {
+								given_id: option.id,
+								text: option.text,
+								polls: { connect: { id: pollId } },
+							},
+						});
+					})
+				);
+			}
+			if (lenNewOptions < lenOldOptions) {
+				const newOptionsArray = oldOptions.splice(lenNewOptions);
+				console.log(newOptionsArray, 123);
+				await Promise.all(
+					newOptionsArray.map(async (option) => {
+						await dbConnection.poll_options.delete({
+							where: {
+								id: option.id,
+							},
+						});
+					})
+				);
+			}
 
 			await Promise.all(
 				oldOptions.map(async (option, index) => {

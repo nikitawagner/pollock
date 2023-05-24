@@ -157,10 +157,21 @@ export const getVoteLack = async (req, res, next) => {
 						text: option.text,
 					});
 				});
+				const compareById = (a, b) => {
+					if (a.id < b.id) {
+						return -1;
+					}
+					if (a.id > b.id) {
+						return 1;
+					}
+					return 0;
+				};
+
+				const sortedArray = formattedArray.sort(compareById);
 				const pollBody = {
 					title: pollResponse.title,
 					description: pollResponse.description,
-					options: formattedArray,
+					options: sortedArray,
 					setting: setting,
 					fixed: JSON.parse(pollResponse.fixed),
 				};

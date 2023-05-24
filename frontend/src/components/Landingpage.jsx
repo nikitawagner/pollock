@@ -22,6 +22,7 @@ const Landingpage = () => {
 	const getPoll = async (token) => {
 		try {
 			const { data } = await API.get(`poll/lack/${token}`);
+			console.log(data);
 			setPoll(data);
 			setTitle(data.poll.body.title);
 			setDescription(data.poll.body.description);

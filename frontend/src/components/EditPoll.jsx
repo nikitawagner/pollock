@@ -19,30 +19,47 @@ const EditPoll = () => {
 	const [error, setError] = useState("");
 	const [fixed, setFixed] = useState([0]);
 
+	const addOption = () => {
+		setOptions([...options, { id: 0, text: "" }]);
+	};
 	const handleChangeOption = (value, index) => {
 		const element = {
-			id: 0,
+			id: index + 1,
 			text: value,
 		};
 		const newArray = [...options];
 		newArray[index] = element;
+		console.log(newArray);
 		setOptions(newArray);
 	};
 
 	const deleteOption = (index) => {
-		if (options.length > 1) {
+		if (options.length > 2) {
 			let newArray = options.filter((_, i) => i !== index);
 			setOptions(newArray);
 		}
 	};
 
+	const compareById = (a, b) => {
+		if (a.id < b.id) {
+			return -1;
+		}
+		if (a.id > b.id) {
+			return 1;
+		}
+		return 0;
+	};
+
 	const getPoll = async (token) => {
 		try {
 			const { data } = await API.get(`/poll/lack/${token}`);
+			console.log(data);
 			setPoll(data);
 			setTitle(data.poll.body.title);
 			setDescription(data.poll.body.description);
-			setOptions(data.poll.body.options);
+			const sortedArray = data.poll.body.options.sort(compareById);
+			console.log(sortedArray);
+			setOptions(sortedArray);
 			setWorst(data.poll.body.setting.worst);
 			setVoices(data.poll.body.setting.voices);
 			setFixed(data.poll.body.fixed);
@@ -67,6 +84,7 @@ const EditPoll = () => {
 		};
 		setPoll(null);
 		try {
+			console.log(body);
 			const response = await API.put(`poll/lack/${adminToken}`, body);
 			setError("");
 		} catch (error) {
@@ -93,6 +111,7 @@ const EditPoll = () => {
 			setFixed(editedArray);
 		}
 	};
+
 	return (
 		<>
 			<h1 className="m-3 text-center">UMFRAGE BEARBEITEN</h1>
@@ -176,10 +195,21 @@ const EditPoll = () => {
 									>
 										{fixed.includes(index + 1) ? "Unfix" : "Fix"}
 									</Button>
+									{index > 1 && index + 1 === options.length ? (
+										<Button
+											variant="danger"
+											onClick={() => deleteOption(index)}
+										>
+											Entfernen
+										</Button>
+									) : null}
 								</div>
 							);
 						})}
 					</div>
+					<Button variant="secondary" onClick={addOption} className="w-100">
+						Option hinzufügen
+					</Button>
 					<hr />
 					<div className="overall">
 						<div className="worst-input">

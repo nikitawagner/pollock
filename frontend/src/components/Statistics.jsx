@@ -51,6 +51,8 @@ const Statistics = ({ token }) => {
 			optionsObject.forEach((option) => {
 				labelsArray.push(option.text);
 			});
+			console.log(data);
+			console.log(choicesObject);
 			setLabels(labelsArray);
 
 			const choicesDataArray = [];
