@@ -29,6 +29,12 @@ const EditPoll = () => {
 		setOptions(newArray);
 	};
 
+	const addOption = () => {
+		const newOption = { id: options.length, text: "" };
+		setOptions([...options, newOption]);
+	};
+
+
 	const deleteOption = (index) => {
 		if (options.length > 1) {
 			let newArray = options.filter((_, i) => i !== index);
@@ -93,6 +99,7 @@ const EditPoll = () => {
 			setFixed(editedArray);
 		}
 	};
+
 	return (
 		<>
 			<h1 className="m-3 text-center">UMFRAGE BEARBEITEN</h1>
@@ -169,7 +176,7 @@ const EditPoll = () => {
 									<div className="option-buttons">
 										<Button
 											className="option-button"
-											variant={fixed.includes(index + 1) ? "secondary" : "success"}
+											variant={fixed.includes(index + 1) ? "secondary" : "primary"}
 											onClick={() => handleClickFixed(index + 1)}
 										>
 											{fixed.includes(index + 1) ? "Unfix" : "Fix"}
@@ -188,6 +195,10 @@ const EditPoll = () => {
 							);
 						})}
 					</div>
+					<hr />
+					<Button variant="secondary" onClick={addOption} className="w-100">
+						Option hinzufügen
+					</Button>
 					<hr />
 					<div className="overall">
 						<div className="worst-input">
