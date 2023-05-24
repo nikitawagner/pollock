@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Button from "react-bootstrap/Button";
 import API from "../API";
 import Statistics from "./Statistics";
+import {FormControl} from "react-bootstrap";
 
 const Landingpage = () => {
 	const [token, setToken] = useState("");
@@ -38,9 +39,7 @@ const Landingpage = () => {
 			editedArray.push(option);
 			setSelectedChoice(editedArray);
 		} else {
-			const editedArray = selectedChoice.filter(
-				(choice) => choice.id != option.id
-			);
+			const editedArray = selectedChoice.filter((choice) => choice.id !== option.id);
 			setSelectedChoice(editedArray);
 		}
 		console.log(selectedChoice);
@@ -53,7 +52,7 @@ const Landingpage = () => {
 			editedArray.push(option);
 			setWorstArray(editedArray);
 		} else {
-			const editedArray = worstArray.filter((choice) => choice.id != option.id);
+			const editedArray = worstArray.filter((choice) => choice.id !== option.id);
 			setWorstArray(editedArray);
 		}
 	};
@@ -85,6 +84,15 @@ const Landingpage = () => {
 		}
 	};
 
+	const handleCopyToClipboard = async (token) => {
+		try {
+			await navigator.clipboard.writeText(token);
+			alert("Copied to Clipboard!");
+		} catch (error) {
+			console.error("Failed to copy: ", error);
+		}
+	};
+
 	return (
 		<>
 			<h1 className="m-3 text-center">TEILNEHMEN</h1>
@@ -98,7 +106,7 @@ const Landingpage = () => {
 						aria-label="admin-tooken"
 						aria-describedby="inputGroup-sizing-default"
 						value={token}
-						onChange={() => setToken(event.target.value)}
+						onChange={(event) => setToken(event.target.value)}
 					/>
 					<Button
 						variant="success"
@@ -116,7 +124,18 @@ const Landingpage = () => {
 				</div>
 			) : success ? (
 				<>
-					<div className="token-reveal">Edit Token: {editToken}</div>
+					<InputGroup className="mb-3">
+						<InputGroup.Text id="basic-addon2" className="inputGroupText">
+							Edit Token
+						</InputGroup.Text>
+						<FormControl readOnly value={editToken} />
+						<Button
+							variant="outline-secondary"
+							onClick={() => handleCopyToClipboard(editToken)}
+						>
+							Copy
+						</Button>
+					</InputGroup>
 					<Statistics token={token} />
 				</>
 			) : (
@@ -124,8 +143,8 @@ const Landingpage = () => {
 					<h1>Titel: {title}</h1>
 					<h5>Beschreibung: {description.length === 0 ? "/" : description}</h5>
 					{/* {selectedChoice.map((choice) => {
-						return <div>{choice.text}</div>;
-					})} */}
+              return <div>{choice.text}</div>;
+            })} */}
 					<InputGroup className="mb-3">
 						<InputGroup.Text id="inputGroup-sizing-default">
 							Dein Name
@@ -134,7 +153,7 @@ const Landingpage = () => {
 							aria-label="admin-tooken"
 							aria-describedby="inputGroup-sizing-default"
 							value={name}
-							onChange={() => setName(event.target.value)}
+							onChange={(event) => setName(event.target.value)}
 						/>
 					</InputGroup>
 					<div>Anzahl Stimmen: {voices}</div>
@@ -150,7 +169,7 @@ const Landingpage = () => {
 											worstArray.filter((choice) => choice.id === option.id)
 												.length > 0
 										}
-										onChange={() =>
+										onChange={(event) =>
 											handleChangeChoice(event.target.checked, option)
 										}
 									/>
@@ -166,7 +185,7 @@ const Landingpage = () => {
 												.length > 0
 										}
 										id="worst-select"
-										onChange={() =>
+										onChange={(event) =>
 											handleChangeWorst(event.target.checked, option)
 										}
 									/>

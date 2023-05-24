@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import {useState } from "react";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Button from "react-bootstrap/Button";
 import API from "../API";
+import {FormControl} from "react-bootstrap";
 
 const CreatePoll = () => {
 	const [title, setTitle] = useState("");
@@ -57,6 +58,15 @@ const CreatePoll = () => {
 			setShareToken(response.data.share.value);
 		} else {
 			setError(response.data.message);
+		}
+	};
+
+	const handleCopyToClipboard = async (token) => {
+		try {
+			await navigator.clipboard.writeText(token);
+			alert('Copied to Clipboard!');
+		} catch (error) {
+			console.error('Failed to copy: ', error);
 		}
 	};
 
@@ -174,8 +184,22 @@ const CreatePoll = () => {
 				</>
 			) : (
 				<>
-					<div className="token-reveal">Admin Token: {adminToken}</div>
-					<div className="token-reveal">Share Token: {shareToken}</div>
+					<InputGroup className="mb-3">
+						<InputGroup.Text id="basic-addon1" className="inputGroupText">Admin Token</InputGroup.Text>
+						<FormControl
+							readOnly
+							value={adminToken}
+						/>
+						<Button variant="outline-secondary" onClick={() => handleCopyToClipboard(adminToken)}>Copy</Button>
+					</InputGroup>
+					<InputGroup className="mb-3">
+						<InputGroup.Text id="basic-addon2" className="inputGroupText">Share Token</InputGroup.Text>
+						<FormControl
+							readOnly
+							value={shareToken}
+						/>
+						<Button variant="outline-secondary" onClick={() => handleCopyToClipboard(shareToken)}>Copy</Button>
+					</InputGroup>
 					<Button
 						className="w-100"
 						variant="success"

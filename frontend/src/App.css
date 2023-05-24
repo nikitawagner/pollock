@@ -1,61 +1,81 @@
-.worst-input {
-	display: flex;
-	align-items: center;
-	justify-content: flex-start;
-	margin-left: 3vw;
-}
-
-.worst-select {
-	display: flex;
-	justify-content: space-around;
-	background-color: grey;
-	margin: 5px;
-	border-radius: 10px;
-	color: white;
-}
-
-.overall {
+#root {
+	max-width: 1280px;
+	margin: 0 auto;
+	padding: 2rem;
+	text-align: center;
 	display: flex;
 	flex-direction: column;
-	justify-content: center;
+	min-height: 100vh;
+	background-color: #f8f9fa;
+}
+
+.logo {
+	height: 6em;
+	padding: 1.5em;
+	will-change: filter;
+	transition: filter 300ms;
+}
+.logo:hover {
+	filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+	filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	a:nth-of-type(2) .logo {
+		animation: logo-spin infinite 20s linear;
+	}
+}
+
+.App-header {
+	padding: 1.5rem;
+	background-color: #343a40;
+	color: white;
+}
+
+main {
+	flex-grow: 1;
+	padding: 2rem;
+}
+
+button {
+	margin-top: 1rem;
+}
+
+.card {
+	padding: 2em;
+}
+
+.read-the-docs {
+	color: #888;
+}
+.container {
+	max-width: 800px;
+	margin: 0 auto;
+}
+#root .btn-copy, .btn-delete {
+	margin: 0 !important;
+	align-self: center;
+}
+.input-label {
+	width: 110px;
+	text-align: left;
+}
+.options .m-1 {
+	display: flex;
+	justify-content: flex-start;
 	align-items: center;
-	background-color: grey;
-	margin: 5px;
-	border-radius: 10px;
-	color: white;
 }
-
-.options {
-	display: flex;
-	flex-direction: row;
-	justify-content: center;
-	flex-wrap: wrap;
-	padding: 5px;
-	background-color: grey;
-	margin: 5px;
-	border-radius: 10px;
-}
-
-.overall-input {
-	width: 90%;
-	margin: 10px;
-}
-
-.token-reveal {
-	background-color: grey;
-	margin: 5px;
-	padding: 5px;
-	border-radius: 10px;
-	color: white;
-	text-align: center;
-}
-.option-input,
-.option-button {
-	width: 100%;
-	flex: 1;
-}
-.option-buttons {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
+.inputGroupText {
+	width: 120px;
 }
