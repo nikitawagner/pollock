@@ -87,7 +87,7 @@ const Landingpage = () => {
 	const handleCopyToClipboard = async (token) => {
 		try {
 			await navigator.clipboard.writeText(token);
-			alert("Copied to Clipboard!");
+			//alert("Copied to Clipboard!");
 		} catch (error) {
 			console.error("Failed to copy: ", error);
 		}

@@ -32,6 +32,7 @@ const PollResult = () => {
 	}, [token]);
 	return (
 		<>
+			<h1 className="m-3 text-center">UMFRAGE ERGEBNIS</h1>
 			{poll ? (
 				<div>
 					<h1 className="text-center">Gewinner:</h1>
